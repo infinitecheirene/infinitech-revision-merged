@@ -86,8 +86,31 @@ export default function SurveyForm() {
     return errors.length === 0; // valid if no errors
   };
 
-  const validateStep2 = () => { /* your validation logic */ return true; };
-  const validateStep3 = () => { /* your validation logic */ return true; };
+  const validateStep2 = () => {
+    const errors = [];
+
+    const noSystemSelected =
+      formData.current_systems.length === 0 && !otherSelections.system;
+
+    if (noSystemSelected) errors.push("current_systems");
+
+    if (otherSelections.system && formData.current_system_other.trim() === "") {
+      errors.push("current_system_other");
+    }
+
+    if (!formData.satisfaction_level.trim()) {
+      errors.push("satisfaction_level");
+    }
+
+    return errors.length === 0;
+  };
+
+  const validateStep3 = () => { 
+    const errors = []; 
+    
+    return true; 
+  };
+  
   const validateStep4 = () => { /* your validation logic */ return true; };
   const validateStep5 = () => { /* your validation logic */ return true; };
   const validateStep6 = () => { /* your validation logic */ return true; };
@@ -553,15 +576,24 @@ export default function SurveyForm() {
                     </div>
                   ))}
                 </div>
+                {formData.current_systems.length === 0 &&
+                !otherSelections.system &&
+                (
+                  <p className="text-red-500 text-sm mt-1">Current System is required</p>
+                )}
                 {otherSelections.system && (
                   <div className="mt-2 ml-6">
                     <Input
-                      placeholder="Please specify your system"
+                      placeholder="Please specify your Current System"
                       value={formData.current_system_other}
                       onChange={(e) => handleInputChange("current_system_other", e.target.value)}
                       className="border-slate-300"
                     />
                   </div>
+                )}
+                {otherSelections.system &&
+                formData.current_system_other.trim() === "" && (
+                  <p className="text-red-500 text-sm mt-1">Please specify your Current System</p>
                 )}
               </div>
 
@@ -581,6 +613,10 @@ export default function SurveyForm() {
                     </div>
                   ))}
                 </RadioGroup>
+                
+                  {formData.satisfaction_level === "" && (
+                    <p className="text-red-500 text-sm mt-1">Satisfaction is required</p>
+                  )}
               </div>
             </CardContent>
           </>
