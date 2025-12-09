@@ -63,6 +63,46 @@ export default function SurveyForm() {
     additional_comments: "",
   })
 
+  const validateStep1 = () => {
+    const errors = [];
+
+    if (!formData.company_name.trim()) errors.push("company_name");
+    if (!formData.no_of_employees.trim()) errors.push("no_of_employees");
+    if (!formData.location.trim()) errors.push("location");
+    if (!formData.contact_person.trim()) errors.push("contact_person");
+    if (!formData.role.trim()) errors.push("role");
+    if (!formData.email.trim()) errors.push("email");
+    if (!formData.phone.trim()) errors.push("phone");
+
+    // Industry validation
+    const noIndustrySelected =
+      formData.industries.length === 0 && !otherSelections.industry;
+
+    if (noIndustrySelected) errors.push("industries");
+
+    if (otherSelections.industry && formData.industry_other.trim() === "")
+      errors.push("industry_other");
+
+    return errors.length === 0; // valid if no errors
+  };
+
+  const validateStep2 = () => { /* your validation logic */ return true; };
+  const validateStep3 = () => { /* your validation logic */ return true; };
+  const validateStep4 = () => { /* your validation logic */ return true; };
+  const validateStep5 = () => { /* your validation logic */ return true; };
+  const validateStep6 = () => { /* your validation logic */ return true; };
+
+
+  const validators = {
+  1: validateStep1,
+  2: validateStep2,
+  3: validateStep3,
+  4: validateStep4,
+  5: validateStep5,
+  6: validateStep6,
+};
+
+
   const [errors, setErrors] = useState({
     email: "",
     phone: "",
@@ -296,6 +336,9 @@ export default function SurveyForm() {
                     value={formData.company_name}
                     onChange={(e) => handleInputChange("company_name", e.target.value)}
                   />
+                  {formData.company_name === "" && (
+                    <p className="text-red-500 text-sm mt-1">Company Name is required</p>
+                  )}
                 </div>
                  <div className="space-y-2">
                   <Label htmlFor="noOfEmployees" className="text-slate-700">
@@ -317,6 +360,9 @@ export default function SurveyForm() {
                       <SelectItem value="1000+" className="hover:bg-slate-100 cursor-pointer">1000+</SelectItem>
                     </SelectContent>
                   </Select>
+                  {formData.no_of_employees === "" && (
+                    <p className="text-red-500 text-sm mt-1">Number of Emloyees is required</p>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="location" className="text-slate-700">
@@ -329,6 +375,9 @@ export default function SurveyForm() {
                     value={formData.location}
                     onChange={(e) => handleInputChange("location", e.target.value)}
                   />
+                  {formData.location === "" && (
+                    <p className="text-red-500 text-sm mt-1">Location is required</p>
+                  )}
                 </div>
               </div>
 
@@ -368,6 +417,11 @@ export default function SurveyForm() {
                     </div>
                   ))}
                 </div>
+                {formData.industries.length === 0 &&
+                !otherSelections.industry &&
+                (
+                  <p className="text-red-500 text-sm mt-1">Industry is required</p>
+                )}
                 {otherSelections.industry && (
                   <div className="mt-2 ml-6">
                     <Input
@@ -377,6 +431,10 @@ export default function SurveyForm() {
                       className="border-slate-300"
                     />
                   </div>
+                )}
+                {otherSelections.industry &&
+                formData.industry_other.trim() === "" && (
+                  <p className="text-red-500 text-sm mt-1">Please specify your industry</p>
                 )}
               </div>
 
@@ -392,6 +450,9 @@ export default function SurveyForm() {
                     value={formData.contact_person}
                     onChange={(e) => handleInputChange("contact_person", e.target.value)}
                   />
+                  {formData.contact_person === "" && (
+                    <p className="text-red-500 text-sm mt-1">Contact Person is required</p>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="role" className="text-slate-700">
@@ -404,6 +465,9 @@ export default function SurveyForm() {
                     value={formData.role}
                     onChange={(e) => handleInputChange("role", e.target.value)}
                   />
+                  {formData.role === "" && (
+                    <p className="text-red-500 text-sm mt-1">Role/Position is required</p>
+                  )}
                 </div>
               </div>
 
@@ -416,11 +480,13 @@ export default function SurveyForm() {
                     id="email"
                     type="email"
                     placeholder="Enter email"
-                    className={cn("border-slate-300", errors.email && "border-red-500 focus-visible:ring-red-500")}
+                    className="border-slate-300"
                     value={formData.email}
                     onChange={handleEmailChange}
                   />
-                  {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+                  {formData.email === "" && (
+                    <p className="text-red-500 text-sm mt-1">Email Address is required</p>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="phone" className="text-slate-700">
@@ -430,11 +496,13 @@ export default function SurveyForm() {
                     id="phone"
                     type="tel"
                     placeholder="Enter phone number"
-                    className={cn("border-slate-300", errors.phone && "border-red-500 focus-visible:ring-red-500")}
+                    className="border-slate-300"
                     value={formData.phone}
                     onChange={handlePhoneChange}
                   />
-                  {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
+                  {formData.contact_person === "" && (
+                    <p className="text-red-500 text-sm mt-1">Phone Number is required</p>
+                  )}
                 </div>
               </div>
             </CardContent>
@@ -848,11 +916,42 @@ export default function SurveyForm() {
 
         {currentStep < TOTAL_STEPS ? (
           <Button
-            onClick={handleNext}
-            className="gap-2 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white border-0"
+            onClick={() => {
+              // STEP 1 VALIDATION
+              if (currentStep === 1) {
+                if (!validateStep1()) return;
+              }
+
+              // STEP 2 VALIDATION
+              if (currentStep === 2) {
+                if (!validateStep2()) return;
+              }
+
+              // STEP 3 VALIDATION
+              if (currentStep === 3) {
+                if (!validateStep3()) return;
+              }
+
+              // STEP 4 VALIDATION
+              if (currentStep === 4) {
+                if (!validateStep4()) return;
+              }
+
+              // STEP 5 VALIDATION
+              if (currentStep === 5) {
+                if (!validateStep5()) return;
+              }
+
+              // STEP 6 VALIDATION
+              if (currentStep === 6) {
+                if (!validateStep6()) return;
+              }
+
+              // If validation is passed
+              setCurrentStep(currentStep + 1);
+            }}
           >
             Next
-            <ChevronRight className="w-4 h-4" />
           </Button>
         ) : (
           <Button
