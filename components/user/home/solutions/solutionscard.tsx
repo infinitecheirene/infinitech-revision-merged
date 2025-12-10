@@ -210,7 +210,8 @@ const SolutionsPage: React.FC = () => {
       onMouseLeave={() => setHoveredCard(null)}
       onClick={() => handleExternalLink(solution.link)}
     >
-      <div className="relative h-[420px] sm:h-[460px] md:h-[480px] lg:h-[500px] xl:h-[520px] rounded-2xl overflow-hidden bg-white shadow-lg hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-500 hover:scale-[1.02] border border-gray-200">
+      <div 
+      className="relative h-[420px] sm:h-[460px] md:h-[480px] lg:h-[500px] xl:h-[520px] rounded-2xl overflow-hidden bg-white shadow-lg hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-500 hover:scale-[1.02] border border-gray-200">
         {/* Image Section */}
         <div className="relative w-full h-[52%] overflow-hidden">
           <img
@@ -340,7 +341,7 @@ const SolutionsPage: React.FC = () => {
         }
       `}</style>
 
-      <div ref={sectionRef} className="min-h-screen w-full bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50 my-5 py-5">
+      <div ref={sectionRef} className="min-h-screen w-full my-5 py-5">
         {/* Background Elements */}
         <div className="absolute inset-0 opacity-30 overflow-hidden">
           <div
