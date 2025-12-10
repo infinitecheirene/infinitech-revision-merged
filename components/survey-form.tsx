@@ -28,7 +28,7 @@ export default function SurveyForm() {
   const [formData, setFormData] = useState({
     // Step 1: Company & Contact
     company_name: "",
-    no_of_employees: "", 
+    no_of_employees: "",
     location: "",
     industries: [] as string[],
     industry_other: "",
@@ -101,11 +101,15 @@ export default function SurveyForm() {
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
-    const sanitizedValue = value.replace(/[a-zA-Z]/g, "")
+    const digitsOnly = value.replace(/\D/g, "")
+    const sanitizedValue = digitsOnly.slice(0, 11)
+
     setFormData((prev) => ({ ...prev, phone: sanitizedValue }))
 
-    if (value !== sanitizedValue) {
+    if (value !== digitsOnly) {
       setErrors((prev) => ({ ...prev, phone: "Phone number cannot contain letters" }))
+    } else if (digitsOnly.length > 11) {
+      setErrors((prev) => ({ ...prev, phone: "Phone number cannot exceed 11 digits" }))
     } else {
       setErrors((prev) => ({ ...prev, phone: "" }))
     }
@@ -172,10 +176,10 @@ export default function SurveyForm() {
   }
 
   const handleNext = async () => {
-    const schema = stepSchemas[currentStep - 1] 
+    const schema = stepSchemas[currentStep - 1]
 
     try {
-      await schema.validate(formData, { abortEarly: false }) 
+      await schema.validate(formData, { abortEarly: false })
       setErrors({})
       if (currentStep < TOTAL_STEPS) {
         setCurrentStep(currentStep + 1)
@@ -188,7 +192,7 @@ export default function SurveyForm() {
             newErrors[validationError.path] = validationError.message
           }
         })
-        setErrors(newErrors) 
+        setErrors(newErrors)
       }
     }
   }
