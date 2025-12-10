@@ -30,7 +30,7 @@ const schema = Yup.object().shape({
 
 const TestimonialForm = () => {
   return (
-    <div className="w-full mx-auto py-8 rounded-2xl shadow-sm">
+    <div className="w-full max-w-lg mx-auto py-8 rounded-2xl shadow-sm">
       <h2 className="text-3xl font-semibold text-primary text-center mb-6">Share Your Experience</h2>
       <p className="mb-6 text-sm text-gray-500">
         We’d love to hear your thoughts! Your feedback helps us grow and inspires others to trust our services.
