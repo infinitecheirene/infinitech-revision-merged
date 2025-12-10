@@ -93,8 +93,8 @@ export async function POST(request: Request) {
             <!-- Footer -->
             <div style="text-align: center; padding: 20px; background: #f9fafb; border-top: 1px solid #e5e7eb;">
               <a href="https://www.infinitechphil.com" style="color: #3b82f6; font-size: 12px; text-decoration: none;">www.infinitechphil.com</a>
-              <div style="font-size: 11px; color: #6b7280; margin-top: 4px;">+639622530149 / (02)7001-6157</div>
-              <div style="font-size: 11px; color: #3b82f6;">infinitechadvertisingcorp@gmail.com</div>
+              <div style="font-size: 11px; color: #6b7280; margin-top: 4px;">(+63) 919-587-4915 / (02)7001-6157</div>
+              <div style="font-size: 11px; color: #3b82f6;">infinitechcorp.ph@gmail.com</div>
               <div style="display: flex; justify-content: space-between; margin-top: 16px; font-size: 11px; color: #9ca3af;">
                 <span>${dateStr} ${timeStr}</span>
                 <span>${receiptNo}</span>

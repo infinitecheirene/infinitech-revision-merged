@@ -212,7 +212,7 @@ const Quote = () => {
     pdf.text("INFINITECH Advertising Corporation - 311 Campos Rueda Bldg, Urban Ave, Makati City", pageWidth / 2, pageHeight - 60, {
       align: "center",
     })
-    pdf.text("Tel: (02) 7001-6157 | (+63) 962-253-0149 | Email: infinitechcorp.ph@gmail.com", pageWidth / 2, pageHeight - 45, { align: "center" })
+    pdf.text("Tel: (02) 7001-6157 | (+63) 919-587-4915 | Email: infinitechcorp.ph@gmail.com", pageWidth / 2, pageHeight - 45, { align: "center" })
 
     return pdf
   }
