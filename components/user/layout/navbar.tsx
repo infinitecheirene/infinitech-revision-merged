@@ -59,28 +59,42 @@ const NavBar = () => {
   }
 
   return (
-    <Navbar className="fixed shadow-lg" maxWidth="2xl" position="sticky" isMenuOpen={isOpen}>
-      <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
-        <NavbarBrand className="max-w-fit cursor-pointer" onClick={() => router.push("/")}>
+    <Navbar
+      className="fixed shadow-lg w-full top-0 z-50 bg-white"
+      maxWidth="2xl"
+      position="sticky"
+      isMenuOpen={isOpen}
+    >
+      <NavbarContent className="basis-auto sm:basis-1/2" justify="start">
+        <NavbarBrand
+          className="flex items-center gap-3 cursor-pointer min-w-0"
+          onClick={() => router.push("/")}
+        >
           <Logo />
-          <div className="mt-2 hidden xl:flex">
-            <div className="flex flex-col justify-center items-center">
-              <p className="font-bold leading-4 text-3xl text-primary">INFINITECH</p>
-              <p className="text-tiny font-semibold text-primary">ADVERTISING CORPORATION</p>
-            </div>
+          <div className="flex-col leading-tight">
+            <p className="hidden xl:flex font-bold text-md xl:text-3xl text-primary">INFINITECH</p>
+            <p className="hidden xl:flex text-xs font-semibold text-primary whitespace-nowrap">
+              ADVERTISING CORPORATION
+            </p>
           </div>
         </NavbarBrand>
       </NavbarContent>
 
-      <NavbarContent justify="center" className="hidden lg:flex justify-start ml-2">
+      {/* CENTER — Desktop Navigation */}
+      <NavbarContent
+        justify="center"
+        className="hidden xl:flex gap-1 xl:gap-3"
+      >
         {links.map((link) => (
           <NavbarItem key={link.name}>
             <Button
               onPress={() => router.push(link.href)}
               className={`cursor-pointer ${
-                isActive(link.href) ? "text-gray-400 bg-primary font-semibold" : "text-black"
+                isActive(link.href)
+                  ? "text-gray-100 bg-primary font-semibold"
+                  : "text-black"
               }`}
-              variant={`${isActive(link.href) ? "solid" : "light"}`}
+              variant={isActive(link.href) ? "solid" : "light"}
             >
               {link.name}
             </Button>
@@ -88,8 +102,11 @@ const NavBar = () => {
         ))}
       </NavbarContent>
 
-      <NavbarContent className="hidden lg:flex basis-1/5 sm:basis-full" justify="end">
-        {/* ✅ Show Install App button only when available */}
+      {/* RIGHT — Desktop Actions */}
+      <NavbarContent
+        className="hidden xl:flex basis-auto"
+        justify="end"
+      >
         {showInstallButton && (
           <NavbarItem>
             <Button
@@ -103,7 +120,7 @@ const NavBar = () => {
           </NavbarItem>
         )}
 
-        <NavbarItem className="gap-2 cursor-pointer">
+        <NavbarItem>
           <Button
             className="text-sm bg-primary text-white font-medium hover:bg-primary-light"
             endContent={<LuArrowRight />}
@@ -115,45 +132,52 @@ const NavBar = () => {
         </NavbarItem>
       </NavbarContent>
 
-      <NavbarContent className="lg:hidden basis-1 pl-4" justify="end">
+      {/* RIGHT SECTION — Mobile */}
+      <NavbarContent
+        className="xl:hidden basis-auto pl-3"
+        justify="end"
+      >
         {showInstallButton && (
           <NavbarItem>
             <Button
               onPress={handleInstallApp}
               className="bg-blue-600 text-white font-medium hover:bg-blue-700 mr-2"
-              variant="solid"
               size="sm"
+              variant="solid"
               startContent={<LuDownload />}
             >
               Install App
             </Button>
           </NavbarItem>
         )}
+
         <NavbarMenuToggle onClick={() => setIsOpen(!isOpen)} />
       </NavbarContent>
 
-      <NavbarMenu>
-        <div className="mx-4 mt-2 flex flex-col gap-2">
+      {/* MOBILE MENU */}
+      <NavbarMenu className="overflow-y-auto max-h-[90vh]">
+        <div className="mx-4 mt-4 flex flex-col gap-3 pb-6">
           {links.map((link) => (
             <NavbarMenuItem
-              className={`cursor-pointer ${isActive(link.href) ? "text-primary-light" : "text-black"}`}
               key={link.name}
+              className={`cursor-pointer text-lg ${
+                isActive(link.href) ? "text-primary" : "text-black"
+              }`}
               onClick={() => {
-                setIsOpen(false)
-                router.push(link.href)
+                setIsOpen(false);
+                router.push(link.href);
               }}
             >
               {link.name}
             </NavbarMenuItem>
           ))}
 
-          {/* ✅ Install App inside mobile menu too */}
           {showInstallButton && (
             <NavbarMenuItem
-              className="cursor-pointer text-blue-600"
+              className="cursor-pointer text-blue-600 text-lg"
               onClick={() => {
-                handleInstallApp()
-                setIsOpen(false)
+                handleInstallApp();
+                setIsOpen(false);
               }}
             >
               Install App
@@ -161,10 +185,12 @@ const NavBar = () => {
           )}
 
           <NavbarMenuItem
-            className={`cursor-pointer ${isActive("/quote") ? "text-primary-light" : "text-black"}`}
+            className={`cursor-pointer text-lg ${
+              isActive("/quote") ? "text-primary" : "text-black"
+            }`}
             onClick={() => {
-              setIsOpen(false)
-              router.push("/quote")
+              setIsOpen(false);
+              router.push("/quote");
             }}
           >
             Get a Quote
