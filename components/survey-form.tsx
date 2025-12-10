@@ -14,7 +14,15 @@ import { CheckCircle2, ChevronLeft, ChevronRight, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const TOTAL_STEPS = 6
-const stepTitles = ["Company & Contact", "Current Systems", "Challenges", "Hidden Needs", "Customization", "Feedback"]
+const stepTitles = 
+  [
+    "Company & Contact", 
+    "Current Systems", 
+    "Challenges", 
+    "Hidden Needs", 
+    "Customization", 
+    "Feedback"
+  ]
 
 export default function SurveyForm() {
   const [currentStep, setCurrentStep] = useState(1)
@@ -363,7 +371,7 @@ export default function SurveyForm() {
                     <p className="text-red-500 text-sm mt-1">Company Name is required</p>
                   )}
                 </div>
-                 <div className="space-y-2">
+                <div className="space-y-2">
                   <Label htmlFor="noOfEmployees" className="text-slate-700">
                     Number of Employees
                   </Label>

@@ -55,39 +55,44 @@ const Services = () => {
         </div>
 
         <div className="xl:py-8">
-          <div className="flex flex-col justify-center items-center">
-            {services.map((service, index) => (
-              <div
-                key={service.title}
-                className="grid grid-cols-1 md:grid-cols-2 items-center gap-8 mb-8"
-              >
-                <div className={index % 2 === 0 ? "md:order-2" : "md:order-1"}>
-                  <img
-                    className="w-full h-[28rem] object-contain"
-                    alt={service.title}
-                    src={`/images/services/${service.image}`}
-                  />
-                </div>
+          <div className="flex flex-col items-center">
+            {services.map((service, index) => {
+              const isEven = index % 2 === 0;
 
+              return (
                 <div
-                  className={index % 2 === 0 ? "md:order-1" : "md:order-2"}
+                  key={service.title}
+                  className="grid grid-cols-1 md:grid-cols-2 items-center gap-8 mb-12 w-full"
                 >
-                  <div className="max-w-lg">
-                    <span className="text-xl text-orange-500 font-bold">
-                      {service.title}
-                    </span>
-                    <h1 className="text-3xl text-blue-950 font-bold mt-2 font-['Poetsen_One']">
-                      {service.subtitle}
-                    </h1>
-                    <p className="text-lg text-gray-600 mt-4">
-                      {service.description}
-                    </p>
+                  <div className={isEven ? "md:order-2" : "md:order-1"}>
+                    <img
+                      className="w-full h-[28rem] object-cover rounded-xl"
+                      alt={service.title}
+                      src={`/images/services/${service.image}`}
+                    />
+                  </div>
+
+                  <div className={isEven ? "md:order-1" : "md:order-2"}>
+                    <div className="max-w-lg space-y-4">
+                      <span className="text-xl text-orange-500 font-bold">
+                        {service.title}
+                      </span>
+
+                      <h1 className="text-3xl text-blue-950 font-bold font-['Poetsen_One']">
+                        {service.subtitle}
+                      </h1>
+
+                      <p className="text-lg text-gray-600">
+                        {service.description}
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
+
       </div>
     </section>
   );
