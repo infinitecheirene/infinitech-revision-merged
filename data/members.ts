@@ -36,7 +36,7 @@ export const members = [
       href: "https://msng.link/o?09298597655=vi",
     },
     facebookname: "Krissa Bongon",
-    href: "https://www.facebook.com/charizr1",
+    href: "https://www.facebook.com/infinitech.krissa",
   },
   {
     name: "Baby Rose Hernandez",
