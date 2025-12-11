@@ -3,10 +3,11 @@ import { poetsen_one } from "@/config/fonts";
 import InquiryForm from "@/components/user/contact/inquiryForm";
 import { Divider } from "@heroui/react";
 import Links from "@/components/user/contact/links";
+import { Mouse } from "lucide-react";
 
 const Contact = () => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 min-h-screen pt-16">
+    <div className="grid grid-cols-1 md:grid-cols-2 min-h-screen">
       {/* Left side */}
       <div className="flex justify-center items-center container mx-auto py-8 md:py-12 px-4">
         <div className="max-w-lg">
@@ -49,3 +50,4 @@ const Contact = () => {
 };
 
 export default Contact;
+
