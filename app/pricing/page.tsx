@@ -361,7 +361,7 @@ const PricingPage = () => {
       {/* Header Section */}
       <section className="container mx-auto px-4 sm:px-6 lg:px-8 mb-8 lg:mb-12">
         <div className="text-center max-w-4xl mx-auto">
-          <h1 className={`text-5xl font-bold text-accent leading-tight ${poetsen_one.className}`}>
+          <h1 className={`text-4xl text-accent font-bold uppercase`}>
             Pricing Plans
           </h1>
           <h2 className="text-3xl text-primary font-['Poetsen_One']">
