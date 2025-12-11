@@ -5,7 +5,6 @@ import PricingCard from "@/components/pricingCard"
 import { X, ShoppingCart, Mail, Loader2, Plus, Minus, Globe, CreditCard, Share, Share2, Video } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useDeviceType } from "@/hooks/use-device"
-import { poetsen_one } from "@/config/fonts"
 
 interface CartItem {
   planName: string
@@ -396,9 +395,9 @@ const PricingPage = () => {
       </section>
 
       <section className="container mx-auto px-4 sm:px-6 lg:px-8 mb-12">
-        <div className={`flex ${device === "laptop" ? "flex-row" : "flex-col"} gap-6 max-w-7xl mx-auto`}>
+        <div className={`flex ${device === "mobile" ? "flex-col" : "flex-row"} gap-6 max-w-7xl mx-auto`}>
           <div
-            className="flex flex-col gap-6 w-full mx-auto xl:flex-row md:gap-6 overflow-hidden md:overflow-visible"
+            className={`flex ${device === "laptop" ? "flex-row" : "flex-col"} gap-6 w-full mx-auto md:gap-6 overflow-hidden md:overflow-visible`}
             onPointerLeave={() => {
               setHoveredCol(null)
               setActiveService(null)
@@ -627,7 +626,7 @@ const PricingPage = () => {
 
           {/* Cart */}
           <div
-            className="lg:w-80 shrink-0 order-last col-span-1"
+            className={`${device === "mobile" ? "w-full" : "w-80"} shrink-0 order-last col-span-1`}
             onPointerEnter={() => {
               setHoveredCol(null)
               setActiveService(null)
