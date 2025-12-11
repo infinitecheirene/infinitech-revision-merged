@@ -47,8 +47,8 @@ const Services = () => {
       <div className="flex flex-col justify-center items-center">
         <div className="flex justify-between">
           <div className="max-w-xl text-center">
-            <h1 className="text-4xl text-orange-500 font-bold">OUR SERVICES</h1>
-            <h1 className="text-3xl text-blue-600 font-['Poetsen_One']">
+            <h1 className="text-4xl text-accent font-bold">OUR SERVICES</h1>
+            <h1 className="text-3xl text-primary font-semibold font-['Poetsen_One']">
               Building Innovative Digital Solutions for Your Business
             </h1>
           </div>
@@ -74,11 +74,11 @@ const Services = () => {
 
                   <div className={isEven ? "md:order-1" : "md:order-2"}>
                     <div className="max-w-lg space-y-4">
-                      <span className="text-xl text-orange-500 font-bold">
+                      <span className="text-xl text-accent font-bold">
                         {service.title}
                       </span>
 
-                      <h1 className="text-3xl text-blue-950 font-bold font-['Poetsen_One']">
+                      <h1 className="text-3xl text-primary font-['Poetsen_One']">
                         {service.subtitle}
                       </h1>
 

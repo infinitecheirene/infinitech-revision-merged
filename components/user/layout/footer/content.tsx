@@ -20,7 +20,7 @@ const Content = ({ onOpenSupport }: ContentProps) => {
           </h1>
         </div>
 
-        <p className="text-md text-gray-300 mt-2 w-full lg:max-w-md text-justify lg:text-start">
+        <p className="text-md text-gray-300 mt-2 w-full lg:max-w-md text-justify">
           Infinitech Advertising Corporation specializes in providing customized
           IT solutions that enhance online visibility and streamline business
           processes. We are committed to empowering businesses with innovative

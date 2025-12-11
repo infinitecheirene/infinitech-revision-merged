@@ -27,24 +27,24 @@ const Hero = () => {
           </p>
         </div>
         <div className="flex justify-evenly items-center mt-8">
-          <div className="flex flex-col items-start space-y-2">
+          <div className="flex flex-col items-center lg:items-start space-y-2">
             <div className="inline-flex items-center justify-center bg-blue-200 text-blue-900 p-4 rounded-full">
               <LuBriefcaseBusiness size={32} />
             </div>
 
             <h1 className="text-3xl font-bold text-blue-900">2 years</h1>
-            <p className="text-gray-700 text-lg">Driving growth</p>
+            <p className="text-gray-700 text-md">Driving growth</p>
           </div>
 
           <Divider orientation="vertical" className="h-48"/>
 
-          <div className="flex flex-col items-start space-y-2">
+          <div className="flex flex-col items-center lg:items-start space-y-2">
             <div className="inline-flex items-center justify-center bg-blue-200 text-blue-900 p-4 rounded-full">
               <LuBriefcaseBusiness size={32} />
             </div>
 
             <h1 className="text-3xl font-bold text-blue-900">20+</h1>
-            <p className="text-gray-700 text-lg">Projects completed</p>
+            <p className="text-gray-700 text-md">Projects completed</p>
           </div>
         </div>
       </div>

@@ -120,7 +120,7 @@ const Chatbot = () => {
 
       {/* Chatbot Window */}
       {isChatOpen && (
-        <div className="fixed bottom-6 right-6 z-50 w-96 h-[600px] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+        <div className="fixed bottom-6 right-6 z-50 w-10/12 md:w-96 h-[550px] md:h-[600px] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden">
           {/* Header */}
           <div className="bg-gradient-to-r from-blue-900 to-blue-800 p-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
