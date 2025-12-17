@@ -109,9 +109,9 @@ export const Inquiry = ({ name, email, phone, message }: Props) => (
             Unit 311, Campos Rueda Building, 101 Urban Ave, Makati, 1206 Metro
             Manila
             <br />
-            LandLine: (02) 7001-6157 | Mobile: +63962-253-0149
+            LandLine: (02) 7001-6157 | Mobile: (+63) 919-587-4915
             <br />
-            Email: infinitechadvertisingcorp@gmail.com | Website:{" "}
+            Email: infinitechcorp.ph@gmail.com | Website:{" "}
             <Link href="https://infinitech-2025.vercel.app" style={anchor}>
               infinitech-2025.vercel.app
             </Link>

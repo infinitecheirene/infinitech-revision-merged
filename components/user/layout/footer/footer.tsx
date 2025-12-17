@@ -9,7 +9,6 @@ const FooterLayout = () => {
   const [supportModalOpen, setSupportModalOpen] = useState(false);
 
   const handleOpenSupport = () => {
-    console.log("Opening support modal");
     setSupportModalOpen(true);
   };
 

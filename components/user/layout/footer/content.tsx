@@ -71,7 +71,7 @@ const Content = ({ onOpenSupport }: ContentProps) => {
             size={24}
             className="cursor-pointer"
             onClick={() =>
-              (location.href = "mailto:infinitechadvertisingcorp@gmail.com")
+              (location.href = "mailto:infinitechcorp.ph@gmail.com")
             }
           />
           <FaFacebook
@@ -97,7 +97,6 @@ const Content = ({ onOpenSupport }: ContentProps) => {
 
         <button
           onClick={() => {
-            console.log("Support button clicked");
             onOpenSupport();
           }}
           className="px-6 py-3 bg-orange-400 hover:bg-orange-500 text-black font-bold rounded-lg transition-colors flex items-center justify-center gap-2 text-sm"

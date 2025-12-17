@@ -21,17 +21,17 @@ const initialValues: TestimonialFormValues = {
 }
 
 const schema = Yup.object().shape({
-  name: Yup.string().required("Name is required"),
-  position: Yup.string().required("Position is required"),
-  company: Yup.string().required("Company is required"),
+  name: Yup.string().trim().required("Name is required"),
+  position: Yup.string().trim().required("Position is required"),
+  company: Yup.string().trim().required("Company is required"),
   rating: Yup.number().required("Rating is required").min(1, "Please give a rating").max(5, "Maximum rating is 5 stars"),
-  message: Yup.string().min(20, "Message must be at least 20 characters").required("Message is required"),
+  message: Yup.string().trim().min(20, "Message must be at least 20 characters").required("Message is required"),
 })
 
 const TestimonialForm = () => {
   return (
-    <div className="w-full mx-auto py-8 rounded-2xl shadow-sm">
-      <h2 className="text-3xl font-semibold text-primary text-center mb-6">Share Your Experience</h2>
+    <div className="w-full max-w-lg mx-auto py-8 rounded-2xl">
+      <h2 className="text-4xl text-primary text-center mb-6 font-['Poetsen_One']">Share Your Experience</h2>
       <p className="mb-6 text-sm text-gray-500">
         We’d love to hear your thoughts! Your feedback helps us grow and inspires others to trust our services.
       </p>

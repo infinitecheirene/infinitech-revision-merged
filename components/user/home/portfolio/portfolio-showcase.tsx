@@ -414,11 +414,11 @@ const PortfolioShowcase: React.FC = () => {
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           }`}
         >
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-slate-800 mb-6 animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
+          <h1 className="text-4xl md:text-6xl lg:text-8xl font-black text-primary mb-6 animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
             Our Work
           </h1>
 
-          <p className="text-md md:text-lg text-slate-600 max-w-4xl mx-auto leading-relaxed animate-fade-in-up" style={{ animationDelay: "0.4s" }}>
+          <p className="text-lg md:text-xl text-slate-600 max-w-4xl mx-auto leading-relaxed animate-fade-in-up" style={{ animationDelay: "0.4s" }}>
             Explore our collection of custom-built websites and powerful web systems crafted from scratch or redesigned to perfection. Click any
             project to visit the live site!
           </p>
@@ -461,17 +461,12 @@ const PortfolioShowcase: React.FC = () => {
 
           <div className="mt-10 flex flex-wrap justify-center items-center gap-8 text-slate-600">
             <div className="flex items-center">
-              <div className="w-4 h-4 bg-gradient-to-r from-blue-500 to-cyan-400 rounded-full mr-3 animate-pulse"></div>
               <span className="text-lg font-semibold">{projects.length} Live Systems</span>
             </div>
-            <div className="w-3 h-3 bg-slate-300 rounded-full hidden md:flex"></div>
             <div className="flex items-center">
-              <div className="w-4 h-4 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full mr-3 animate-pulse" style={{animationDelay: '0.5s'}}></div>
               <span className="text-lg font-semibold">Conversion Optimized</span>
             </div>
-            <div className="w-3 h-3 bg-slate-300 rounded-full hidden md:flex"></div>
             <div className="flex items-center">
-              <div className="w-4 h-4 bg-gradient-to-r from-blue-400 to-cyan-500 rounded-full mr-3 animate-pulse" style={{animationDelay: '1s'}}></div>
               <span className="text-lg font-semibold">High Performance</span>
             </div>
           </div>

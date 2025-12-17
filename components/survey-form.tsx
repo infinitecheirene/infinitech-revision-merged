@@ -2,7 +2,6 @@
 
 import type React from "react"
 import { useState } from "react"
-import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
@@ -12,19 +11,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { CheckCircle2, ChevronLeft, ChevronRight, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { Form } from "formik"
+import { stepSchemas } from "@/schemas/survey"
+import { LuArrowRight } from "react-icons/lu"
+import { Button } from "@heroui/react"
 
 const TOTAL_STEPS = 6
-const stepTitles = 
-  [
-    "Company & Contact", 
-    "Current Systems", 
-    "Challenges", 
-    "Hidden Needs", 
-    "Customization", 
-    "Feedback"
-  ]
+const stepTitles = ["Company & Contact", "Current Systems", "Challenges", "Hidden Needs", "Customization", "Feedback"]
 
 export default function SurveyForm() {
+  const [errors, setErrors] = useState<Record<string, string>>({})
   const [currentStep, setCurrentStep] = useState(1)
   const [submitted, setSubmitted] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -33,7 +29,7 @@ export default function SurveyForm() {
   const [formData, setFormData] = useState({
     // Step 1: Company & Contact
     company_name: "",
-    no_of_employees: "", // Added no_of_employees field
+    no_of_employees: "",
     location: "",
     industries: [] as string[],
     industry_other: "",
@@ -71,74 +67,6 @@ export default function SurveyForm() {
     additional_comments: "",
   })
 
-  const validateStep1 = () => {
-    const errors = [];
-
-    if (!formData.company_name.trim()) errors.push("company_name");
-    if (!formData.no_of_employees.trim()) errors.push("no_of_employees");
-    if (!formData.location.trim()) errors.push("location");
-    if (!formData.contact_person.trim()) errors.push("contact_person");
-    if (!formData.role.trim()) errors.push("role");
-    if (!formData.email.trim()) errors.push("email");
-    if (!formData.phone.trim()) errors.push("phone");
-
-    // Industry validation
-    const noIndustrySelected =
-      formData.industries.length === 0 && !otherSelections.industry;
-
-    if (noIndustrySelected) errors.push("industries");
-
-    if (otherSelections.industry && formData.industry_other.trim() === "")
-      errors.push("industry_other");
-
-    return errors.length === 0; // valid if no errors
-  };
-
-  const validateStep2 = () => {
-    const errors = [];
-
-    const noSystemSelected =
-      formData.current_systems.length === 0 && !otherSelections.system;
-
-    if (noSystemSelected) errors.push("current_systems");
-
-    if (otherSelections.system && formData.current_system_other.trim() === "") {
-      errors.push("current_system_other");
-    }
-
-    if (!formData.satisfaction_level.trim()) {
-      errors.push("satisfaction_level");
-    }
-
-    return errors.length === 0;
-  };
-
-  const validateStep3 = () => { 
-    const errors = []; 
-    
-    return true; 
-  };
-  
-  const validateStep4 = () => { /* your validation logic */ return true; };
-  const validateStep5 = () => { /* your validation logic */ return true; };
-  const validateStep6 = () => { /* your validation logic */ return true; };
-
-
-  const validators = {
-  1: validateStep1,
-  2: validateStep2,
-  3: validateStep3,
-  4: validateStep4,
-  5: validateStep5,
-  6: validateStep6,
-};
-
-
-  const [errors, setErrors] = useState({
-    email: "",
-    phone: "",
-  })
-
   const [otherSelections, setOtherSelections] = useState({
     industry: false,
     system: false,
@@ -150,28 +78,39 @@ export default function SurveyForm() {
     return emailRegex.test(email)
   }
 
-  const handleInputChange = (field: keyof typeof formData, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }))
+  const handleInputChange = (field: keyof typeof formData, value: any) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
+    }))
+    setErrors((prev) => ({
+      ...prev,
+      [field]: "",
+    }))
   }
 
   const handleCheckboxChange = (field: keyof typeof formData, value: string, checked: boolean) => {
     setFormData((prev) => {
-      const currentArray = prev[field] as string[]
-      if (checked) {
-        return { ...prev, [field]: [...currentArray, value] }
-      } else {
-        return { ...prev, [field]: currentArray.filter((item) => item !== value) }
+      const arr = prev[field] as string[]
+      return {
+        ...prev,
+        [field]: checked ? [...arr, value] : arr.filter((v) => v !== value),
       }
     })
+    setErrors((prev) => ({ ...prev, [field]: "" }))
   }
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
-    const sanitizedValue = value.replace(/[a-zA-Z]/g, "")
+    const digitsOnly = value.replace(/\D/g, "")
+    const sanitizedValue = digitsOnly.slice(0, 11)
+
     setFormData((prev) => ({ ...prev, phone: sanitizedValue }))
 
-    if (value !== sanitizedValue) {
+    if (value !== digitsOnly) {
       setErrors((prev) => ({ ...prev, phone: "Phone number cannot contain letters" }))
+    } else if (digitsOnly.length > 11) {
+      setErrors((prev) => ({ ...prev, phone: "Phone number cannot exceed 11 digits" }))
     } else {
       setErrors((prev) => ({ ...prev, phone: "" }))
     }
@@ -237,27 +176,25 @@ export default function SurveyForm() {
     }
   }
 
-  const handleNext = () => {
-    if (currentStep === 1) {
-      let hasErrors = false
-      const newErrors = { email: "", phone: "" }
+  const handleNext = async () => {
+    const schema = stepSchemas[currentStep - 1]
 
-      if (formData.email && !validateEmail(formData.email)) {
-        newErrors.email = "Please enter a valid email address"
-        hasErrors = true
+    try {
+      await schema.validate(formData, { abortEarly: false })
+      setErrors({})
+      if (currentStep < TOTAL_STEPS) {
+        setCurrentStep(currentStep + 1)
       }
-
-      if (formData.phone && /[a-zA-Z]/.test(formData.phone)) {
-        newErrors.phone = "Phone number cannot contain letters"
-        hasErrors = true
+    } catch (err: any) {
+      if (err.inner) {
+        const newErrors: Record<string, string> = {}
+        err.inner.forEach((validationError: any) => {
+          if (validationError.path) {
+            newErrors[validationError.path] = validationError.message
+          }
+        })
+        setErrors(newErrors)
       }
-
-      setErrors(newErrors)
-      if (hasErrors) return
-    }
-
-    if (currentStep < TOTAL_STEPS) {
-      setCurrentStep(currentStep + 1)
     }
   }
 
@@ -271,11 +208,11 @@ export default function SurveyForm() {
     setIsSubmitting(true)
 
     try {
+      await stepSchemas[5].validate(formData, { abortEarly: false })
+
       const response = await fetch("/api/surveys", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       })
 
@@ -287,8 +224,18 @@ export default function SurveyForm() {
         console.error("Failed to submit survey:", data)
         alert("Failed to submit survey. Please try again.")
       }
-    } catch (error) {
-      console.error("Error submitting survey:", error)
+    } catch (err: any) {
+      if (err.inner) {
+        const newErrors: any = {}
+        err.inner.forEach((e: any) => {
+          newErrors[e.path] = e.message
+        })
+        setErrors(newErrors)
+        setIsSubmitting(false)
+        return
+      }
+
+      console.error("Error submitting survey:", err)
       alert("An error occurred. Please try again.")
     } finally {
       setIsSubmitting(false)
@@ -302,8 +249,8 @@ export default function SurveyForm() {
           <CheckCircle2 className="w-20 h-20 text-emerald-500 mx-auto mb-6" />
           <h2 className="text-2xl font-bold mb-3 text-slate-800">Thank You!</h2>
           <p className="text-slate-600">
-            Thank you for taking the time to share your business needs. Your feedback helps us build smarter, more
-            effective customized systems for your organization.
+            Thank you for taking the time to share your business needs. Your feedback helps us build smarter, more effective customized systems for
+            your organization.
           </p>
         </CardContent>
       </Card>
@@ -318,16 +265,16 @@ export default function SurveyForm() {
             <div
               key={title}
               className={cn(
-                "flex flex-col items-center flex-1",
-                index + 1 === currentStep && "text-orange-400",
+                "flex flex-col items-center flex-1 text-center",
+                index + 1 === currentStep && "text-primary",
                 index + 1 < currentStep && "text-emerald-400",
-                index + 1 > currentStep && "text-blue-300/50",
+                index + 1 > currentStep && "text-primary/50",
               )}
             >
               <div
                 className={cn(
                   "w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium border-2 transition-colors",
-                  index + 1 === currentStep && "bg-orange-500 text-white border-orange-500",
+                  index + 1 === currentStep && "text-white bg-gradient-to-r from-blue-600 to-cyan-500",
                   index + 1 < currentStep && "bg-emerald-500 text-white border-emerald-500",
                   index + 1 > currentStep && "bg-slate-800 border-blue-400/30 text-blue-300/50",
                 )}
@@ -340,7 +287,7 @@ export default function SurveyForm() {
         </div>
         <div className="w-full bg-slate-700/50 rounded-full h-2">
           <div
-            className="bg-gradient-to-r from-yellow-400 to-orange-500 h-2 rounded-full transition-all duration-300"
+            className="bg-gradient-to-r from-blue-600 to-cyan-500 h-2 rounded-full transition-all duration-300"
             style={{ width: `${(currentStep / TOTAL_STEPS) * 100}%` }}
           />
         </div>
@@ -367,33 +314,38 @@ export default function SurveyForm() {
                     value={formData.company_name}
                     onChange={(e) => handleInputChange("company_name", e.target.value)}
                   />
-                  {formData.company_name === "" && (
-                    <p className="text-red-500 text-sm mt-1">Company Name is required</p>
-                  )}
+                  {errors.company_name && <p className="text-red-500 text-xs mt-1">{errors.company_name}</p>}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="noOfEmployees" className="text-slate-700">
                     Number of Employees
                   </Label>
-                  <Select
-                    value={formData.no_of_employees}
-                    onValueChange={(value) => handleInputChange("no_of_employees", value)}
-                  >
+                  <Select value={formData.no_of_employees} onValueChange={(value) => handleInputChange("no_of_employees", value)}>
                     <SelectTrigger id="noOfEmployees" className="border-slate-300 bg-white">
                       <SelectValue placeholder="Select range" />
                     </SelectTrigger>
                     <SelectContent className="bg-white">
-                      <SelectItem value="1-10" className="hover:bg-slate-100 cursor-pointer">1-10</SelectItem>
-                      <SelectItem value="11-50" className="hover:bg-slate-100 cursor-pointer">11-50</SelectItem>
-                      <SelectItem value="51-200" className="hover:bg-slate-100 cursor-pointer">51-200</SelectItem>
-                      <SelectItem value="201-500" className="hover:bg-slate-100 cursor-pointer">201-500</SelectItem>
-                      <SelectItem value="501-1000" className="hover:bg-slate-100 cursor-pointer">501-1000</SelectItem>
-                      <SelectItem value="1000+" className="hover:bg-slate-100 cursor-pointer">1000+</SelectItem>
+                      <SelectItem value="1-10" className="focus:text-white hover:bg-primary focus:bg-primary cursor-pointer">
+                        1-10
+                      </SelectItem>
+                      <SelectItem value="11-50" className="focus:text-white hover:bg-primary focus:bg-primary cursor-pointer">
+                        11-50
+                      </SelectItem>
+                      <SelectItem value="51-200" className="focus:text-white hover:bg-primary focus:bg-primary cursor-pointer">
+                        51-200
+                      </SelectItem>
+                      <SelectItem value="201-500" className="focus:text-white hover:bg-primary focus:bg-primary cursor-pointer">
+                        201-500
+                      </SelectItem>
+                      <SelectItem value="501-1000" className="focus:text-white hover:bg-primary focus:bg-primary cursor-pointer">
+                        501-1000
+                      </SelectItem>
+                      <SelectItem value="1000+" className="focus:text-white hover:bg-primary focus:bg-primary cursor-pointer">
+                        1000+
+                      </SelectItem>
                     </SelectContent>
                   </Select>
-                  {formData.no_of_employees === "" && (
-                    <p className="text-red-500 text-sm mt-1">Number of Emloyees is required</p>
-                  )}
+                  {errors.no_of_employees && <p className="text-red-500 text-xs mt-1">{errors.no_of_employees}</p>}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="location" className="text-slate-700">
@@ -406,53 +358,48 @@ export default function SurveyForm() {
                     value={formData.location}
                     onChange={(e) => handleInputChange("location", e.target.value)}
                   />
-                  {formData.location === "" && (
-                    <p className="text-red-500 text-sm mt-1">Location is required</p>
-                  )}
+                  {errors.location && <p className="text-red-500 text-xs mt-1">{errors.location}</p>}
                 </div>
               </div>
 
               <div className="space-y-3">
                 <Label className="text-slate-700">Industry</Label>
-                <div className="grid gap-3 grid-cols-2 md:grid-cols-3">
-                  {[
-                    "Manufacturing",
-                    "Retail",
-                    "Healthcare",
-                    "Logistics",
-                    "Education",
-                    "Finance",
-                    "Hospitality",
-                    "Construction",
-                    "Other",
-                  ].map((industry) => (
-                    <div key={industry}>
-                      <div className="flex items-center space-x-2">
-                        <Checkbox
-                          id={`industry-${industry}`}
-                          checked={
-                            industry === "Other" ? otherSelections.industry : formData.industries.includes(industry)
-                          }
-                          onCheckedChange={(checked) => {
-                            if (industry === "Other") {
-                              handleOtherToggle("industry", checked as boolean)
-                            } else {
-                              handleCheckboxChange("industries", industry, checked as boolean)
-                            }
-                          }}
-                        />
-                        <Label htmlFor={`industry-${industry}`} className="font-normal text-sm text-slate-600">
-                          {industry}
-                        </Label>
+                <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
+                  {["Manufacturing", "Retail", "Healthcare", "Logistics", "Education", "Finance", "Hospitality", "Construction", "Other"].map(
+                    (industry) => (
+                      <div key={industry}>
+                        <div className="flex items-center space-x-2">
+                          <Checkbox
+                            id={`industry-${industry}`}
+                            checked={industry === "Other" ? otherSelections.industry : formData.industries.includes(industry)}
+                            onCheckedChange={(checked) => {
+                              if (industry === "Other") {
+                                if (checked) {
+                                  setFormData((prev) => ({ ...prev, industries: [] }))
+                                  handleOtherToggle("industry", true)
+                                } else {
+                                  handleOtherToggle("industry", false)
+                                }
+                              } else {
+                                if (checked) {
+                                  handleOtherToggle("industry", false)
+                                  handleCheckboxChange("industries", industry, true)
+                                } else {
+                                  handleCheckboxChange("industries", industry, false)
+                                }
+                              }
+                            }}
+                          />
+
+                          <Label htmlFor={`industry-${industry}`} className="font-normal text-sm text-slate-600">
+                            {industry}
+                          </Label>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ),
+                  )}
+                  {errors.industries && <p className="text-red-500 text-xs mt-1">{errors.industries}</p>}
                 </div>
-                {formData.industries.length === 0 &&
-                !otherSelections.industry &&
-                (
-                  <p className="text-red-500 text-sm mt-1">Industry is required</p>
-                )}
                 {otherSelections.industry && (
                   <div className="mt-2 ml-6">
                     <Input
@@ -461,11 +408,8 @@ export default function SurveyForm() {
                       onChange={(e) => handleInputChange("industry_other", e.target.value)}
                       className="border-slate-300"
                     />
+                    {errors.industry_other && <p className="text-red-500 text-xs mt-1">{errors.industry_other}</p>}
                   </div>
-                )}
-                {otherSelections.industry &&
-                formData.industry_other.trim() === "" && (
-                  <p className="text-red-500 text-sm mt-1">Please specify your industry</p>
                 )}
               </div>
 
@@ -481,9 +425,7 @@ export default function SurveyForm() {
                     value={formData.contact_person}
                     onChange={(e) => handleInputChange("contact_person", e.target.value)}
                   />
-                  {formData.contact_person === "" && (
-                    <p className="text-red-500 text-sm mt-1">Contact Person is required</p>
-                  )}
+                  {errors.contact_person && <p className="text-red-500 text-xs mt-1">{errors.contact_person}</p>}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="role" className="text-slate-700">
@@ -496,9 +438,7 @@ export default function SurveyForm() {
                     value={formData.role}
                     onChange={(e) => handleInputChange("role", e.target.value)}
                   />
-                  {formData.role === "" && (
-                    <p className="text-red-500 text-sm mt-1">Role/Position is required</p>
-                  )}
+                  {errors.role && <p className="text-red-500 text-xs mt-1">{errors.role}</p>}
                 </div>
               </div>
 
@@ -511,13 +451,11 @@ export default function SurveyForm() {
                     id="email"
                     type="email"
                     placeholder="Enter email"
-                    className="border-slate-300"
+                    className={cn("border-slate-300", errors.email && "border-red-500 focus-visible:ring-red-500")}
                     value={formData.email}
                     onChange={handleEmailChange}
                   />
-                  {formData.email === "" && (
-                    <p className="text-red-500 text-sm mt-1">Email Address is required</p>
-                  )}
+                  {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="phone" className="text-slate-700">
@@ -527,13 +465,11 @@ export default function SurveyForm() {
                     id="phone"
                     type="tel"
                     placeholder="Enter phone number"
-                    className="border-slate-300"
+                    className={cn("border-slate-300", errors.phone && "border-red-500 focus-visible:ring-red-500")}
                     value={formData.phone}
                     onChange={handlePhoneChange}
                   />
-                  {formData.contact_person === "" && (
-                    <p className="text-red-500 text-sm mt-1">Phone Number is required</p>
-                  )}
+                  {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
                 </div>
               </div>
             </CardContent>
@@ -550,7 +486,7 @@ export default function SurveyForm() {
             <CardContent className="space-y-6">
               <div className="space-y-3">
                 <Label className="text-slate-700">Select all that apply</Label>
-                <div className="grid gap-3 grid-cols-2">
+                <div className="grid gap-3 sm:grid-cols-2">
                   {[
                     "ERP",
                     "CRM",
@@ -566,14 +502,22 @@ export default function SurveyForm() {
                       <div className="flex items-center space-x-2">
                         <Checkbox
                           id={`system-${system}`}
-                          checked={
-                            system === "Other" ? otherSelections.system : formData.current_systems.includes(system)
-                          }
+                          checked={system === "Other" ? otherSelections.system : formData.current_systems.includes(system)}
                           onCheckedChange={(checked) => {
                             if (system === "Other") {
-                              handleOtherToggle("system", checked as boolean)
+                              if (checked) {
+                                setFormData((prev) => ({ ...prev, current_systems: [] }))
+                                handleOtherToggle("system", true)
+                              } else {
+                                handleOtherToggle("system", false)
+                              }
                             } else {
-                              handleCheckboxChange("current_systems", system, checked as boolean)
+                              if (checked) {
+                                handleOtherToggle("system", false)
+                                handleCheckboxChange("current_systems", system, true)
+                              } else {
+                                handleCheckboxChange("current_systems", system, false)
+                              }
                             }
                           }}
                         />
@@ -581,27 +525,20 @@ export default function SurveyForm() {
                           {system}
                         </Label>
                       </div>
+                      {errors.current_systems && <p className="text-red-500 text-xs mt-1">{errors.current_systems}</p>}
                     </div>
                   ))}
                 </div>
-                {formData.current_systems.length === 0 &&
-                !otherSelections.system &&
-                (
-                  <p className="text-red-500 text-sm mt-1">Current System is required</p>
-                )}
                 {otherSelections.system && (
                   <div className="mt-2 ml-6">
                     <Input
-                      placeholder="Please specify your Current System"
+                      placeholder="Please specify your system"
                       value={formData.current_system_other}
                       onChange={(e) => handleInputChange("current_system_other", e.target.value)}
                       className="border-slate-300"
                     />
+                    {errors.current_system_other && <p className="text-red-500 text-xs mt-1">{errors.current_system_other}</p>}
                   </div>
-                )}
-                {otherSelections.system &&
-                formData.current_system_other.trim() === "" && (
-                  <p className="text-red-500 text-sm mt-1">Please specify your Current System</p>
                 )}
               </div>
 
@@ -621,10 +558,7 @@ export default function SurveyForm() {
                     </div>
                   ))}
                 </RadioGroup>
-                
-                  {formData.satisfaction_level === "" && (
-                    <p className="text-red-500 text-sm mt-1">Satisfaction is required</p>
-                  )}
+                {errors.satisfaction_level && <p className="text-red-500 text-xs mt-1">{errors.satisfaction_level}</p>}
               </div>
             </CardContent>
           </>
@@ -653,57 +587,27 @@ export default function SurveyForm() {
                 {
                   title: "Process & Workflow",
                   field: "process_workflow_issues",
-                  items: [
-                    "Manual data entry",
-                    "Repetitive tasks",
-                    "Inefficient approval process",
-                    "Data duplication",
-                    "Lack of automation",
-                  ],
+                  items: ["Manual data entry", "Repetitive tasks", "Inefficient approval process", "Data duplication", "Lack of automation"],
                 },
                 {
                   title: "Reporting & Data",
                   field: "reporting_data_issues",
-                  items: [
-                    "Inaccurate reports",
-                    "Delayed reporting",
-                    "Difficult to extract data",
-                    "No real-time dashboard",
-                    "Limited analytics",
-                  ],
+                  items: ["Inaccurate reports", "Delayed reporting", "Difficult to extract data", "No real-time dashboard", "Limited analytics"],
                 },
                 {
                   title: "Human Resources / Payroll",
                   field: "hr_payroll_issues",
-                  items: [
-                    "Payroll errors",
-                    "Late salary processing",
-                    "Leave management issues",
-                    "Attendance tracking problems",
-                    "Compliance issues",
-                  ],
+                  items: ["Payroll errors", "Late salary processing", "Leave management issues", "Attendance tracking problems", "Compliance issues"],
                 },
                 {
                   title: "Customer & Sales Management",
                   field: "customer_sales_issues",
-                  items: [
-                    "Poor customer tracking",
-                    "Delayed order processing",
-                    "Lost sales data",
-                    "No CRM system",
-                    "Lack of customer insights",
-                  ],
+                  items: ["Poor customer tracking", "Delayed order processing", "Lost sales data", "No CRM system", "Lack of customer insights"],
                 },
                 {
                   title: "Inventory & Supply Chain",
                   field: "inventory_supply_chain_issues",
-                  items: [
-                    "Stock shortages",
-                    "Overstocking",
-                    "Inaccurate stock levels",
-                    "Poor supplier tracking",
-                    "Manual stock updates",
-                  ],
+                  items: ["Stock shortages", "Overstocking", "Inaccurate stock levels", "Poor supplier tracking", "Manual stock updates"],
                 },
                 {
                   title: "Digital Marketing & Online Presence",
@@ -724,19 +628,19 @@ export default function SurveyForm() {
                       <div key={item} className="flex items-center space-x-2">
                         <Checkbox
                           id={`challenge-${item}`}
-                          checked={
-                            (formData[section.field as keyof typeof formData] as string[])?.includes(item) || false
-                          }
-                          onCheckedChange={(checked) =>
-                            handleCheckboxChange(section.field as keyof typeof formData, item, checked as boolean)
-                          }
+                          checked={(formData[section.field as keyof typeof formData] as string[])?.includes(item) || false}
+                          onCheckedChange={(checked) => handleCheckboxChange(section.field as keyof typeof formData, item, checked as boolean)}
                         />
+
                         <Label htmlFor={`challenge-${item}`} className="font-normal text-sm text-slate-600">
                           {item}
                         </Label>
                       </div>
                     ))}
                   </div>
+                  {(errors[section.field as keyof typeof formData] as string) && (
+                    <p className="text-red-500 text-xs mt-1">{errors[section.field as keyof typeof formData]}</p>
+                  )}
                 </div>
               ))}
             </CardContent>
@@ -765,43 +669,36 @@ export default function SurveyForm() {
                       <Checkbox
                         id={`situation-${situation}`}
                         checked={formData.daily_situations.includes(situation)}
-                        onCheckedChange={(checked) =>
-                          handleCheckboxChange("daily_situations", situation, checked as boolean)
-                        }
+                        onCheckedChange={(checked) => handleCheckboxChange("daily_situations", situation, checked as boolean)}
                       />
                       <Label htmlFor={`situation-${situation}`} className="font-normal text-sm text-slate-600">
                         {situation}
                       </Label>
                     </div>
                   ))}
+                  {(errors.daily_situations as string) && <p className="text-red-500 text-xs mt-1">{errors.daily_situations}</p>}
                 </div>
               </div>
 
               <div className="space-y-3">
                 <Label className="text-slate-700">Which areas would you like to improve?</Label>
-                <div className="grid gap-2 grid-cols-2">
-                  {[
-                    "Speed of operations",
-                    "Cost reduction",
-                    "Accuracy of data",
-                    "Customer satisfaction",
-                    "Employee productivity",
-                    "Branding",
-                  ].map((area) => (
-                    <div key={area} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={`improve-${area}`}
-                        checked={formData.improvement_areas.includes(area)}
-                        onCheckedChange={(checked) =>
-                          handleCheckboxChange("improvement_areas", area, checked as boolean)
-                        }
-                      />
-                      <Label htmlFor={`improve-${area}`} className="font-normal text-sm text-slate-600">
-                        {area}
-                      </Label>
-                    </div>
-                  ))}
+                <div className="grid gap-2 md:grid-cols-2">
+                  {["Speed of operations", "Cost reduction", "Accuracy of data", "Customer satisfaction", "Employee productivity", "Branding"].map(
+                    (area) => (
+                      <div key={area} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`improve-${area}`}
+                          checked={formData.improvement_areas.includes(area)}
+                          onCheckedChange={(checked) => handleCheckboxChange("improvement_areas", area, checked as boolean)}
+                        />
+                        <Label htmlFor={`improve-${area}`} className="font-normal text-sm text-slate-600">
+                          {area}
+                        </Label>
+                      </div>
+                    ),
+                  )}
                 </div>
+                {(errors.improvement_areas as string) && <p className="text-red-500 text-xs mt-1">{errors.improvement_areas}</p>}
               </div>
             </CardContent>
           </>
@@ -817,7 +714,7 @@ export default function SurveyForm() {
             <CardContent className="space-y-6">
               <div className="space-y-3">
                 <Label className="text-slate-700">Which systems are you interested in improving or implementing?</Label>
-                <div className="grid gap-2 grid-cols-2">
+                <div className="grid gap-2 md:grid-cols-2">
                   {[
                     "Payroll System",
                     "HR Management",
@@ -833,16 +730,22 @@ export default function SurveyForm() {
                       <div className="flex items-center space-x-2">
                         <Checkbox
                           id={`interest-${system}`}
-                          checked={
-                            system === "Other"
-                              ? otherSelections.interest
-                              : formData.systems_of_interest.includes(system)
-                          }
+                          checked={system === "Other" ? otherSelections.interest : formData.systems_of_interest.includes(system)}
                           onCheckedChange={(checked) => {
                             if (system === "Other") {
-                              handleOtherToggle("interest", checked as boolean)
+                              if (checked) {
+                                setFormData((prev) => ({ ...prev, systems_of_interest: [] }))
+                                handleOtherToggle("interest", true)
+                              } else {
+                                handleOtherToggle("interest", false)
+                              }
                             } else {
-                              handleCheckboxChange("systems_of_interest", system, checked as boolean)
+                              if (checked) {
+                                handleOtherToggle("interest", false)
+                                handleCheckboxChange("systems_of_interest", system, true)
+                              } else {
+                                handleCheckboxChange("systems_of_interest", system, false)
+                              }
                             }
                           }}
                         />
@@ -853,6 +756,7 @@ export default function SurveyForm() {
                     </div>
                   ))}
                 </div>
+                {(errors.systems_of_interest as string) && <p className="text-red-500 text-xs mt-1">{errors.systems_of_interest}</p>}
                 {otherSelections.interest && (
                   <div className="mt-2 ml-6">
                     <Input
@@ -861,34 +765,29 @@ export default function SurveyForm() {
                       onChange={(e) => handleInputChange("system_of_interest_other", e.target.value)}
                       className="border-slate-300"
                     />
+                    {(errors.system_of_interest_other as string) && <p className="text-red-500 text-xs mt-1">{errors.system_of_interest_other}</p>}
                   </div>
                 )}
               </div>
 
               <div className="space-y-3">
                 <Label className="text-slate-700">Preferred features (Select all that apply)</Label>
-                <div className="grid gap-2 grid-cols-2">
-                  {[
-                    "Cloud-based access",
-                    "Mobile access",
-                    "Automated reporting",
-                    "System integration",
-                    "Multi-user roles",
-                    "Real-time alerts",
-                  ].map((feature) => (
-                    <div key={feature} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={`feature-${feature}`}
-                        checked={formData.preferred_features.includes(feature)}
-                        onCheckedChange={(checked) =>
-                          handleCheckboxChange("preferred_features", feature, checked as boolean)
-                        }
-                      />
-                      <Label htmlFor={`feature-${feature}`} className="font-normal text-sm text-slate-600">
-                        {feature}
-                      </Label>
-                    </div>
-                  ))}
+                <div className="grid gap-2 md:grid-cols-2">
+                  {["Cloud-based access", "Mobile access", "Automated reporting", "System integration", "Multi-user roles", "Real-time alerts"].map(
+                    (feature) => (
+                      <div key={feature} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`feature-${feature}`}
+                          checked={formData.preferred_features.includes(feature)}
+                          onCheckedChange={(checked) => handleCheckboxChange("preferred_features", feature, checked as boolean)}
+                        />
+                        <Label htmlFor={`feature-${feature}`} className="font-normal text-sm text-slate-600">
+                          {feature}
+                        </Label>
+                      </div>
+                    ),
+                  )}
+                  {(errors.preferred_features as string) && <p className="text-red-500 text-xs mt-1">{errors.preferred_features}</p>}
                 </div>
               </div>
             </CardContent>
@@ -915,6 +814,7 @@ export default function SurveyForm() {
                   value={formData.pain_points}
                   onChange={(e) => handleInputChange("pain_points", e.target.value)}
                 />
+                {(errors.pain_points as string) && <p className="text-red-500 text-xs mt-1">{errors.pain_points}</p>}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="idealSystem" className="text-slate-700">
@@ -928,6 +828,7 @@ export default function SurveyForm() {
                   value={formData.ideal_system}
                   onChange={(e) => handleInputChange("ideal_system", e.target.value)}
                 />
+                {(errors.ideal_system as string) && <p className="text-red-500 text-xs mt-1">{errors.ideal_system}</p>}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="comments" className="text-slate-700">
@@ -941,67 +842,47 @@ export default function SurveyForm() {
                   value={formData.additional_comments}
                   onChange={(e) => handleInputChange("additional_comments", e.target.value)}
                 />
+                {(errors.additional_comments as string) && <p className="text-red-500 text-xs mt-1">{errors.additional_comments}</p>}
               </div>
             </CardContent>
           </>
         )}
       </Card>
 
-      <div className="flex justify-between">
+      <div className="flex flex-col sm:flex-row justify-between gap-4 w-full">
+        {/* Previous Button */}
         <Button
-          variant="outline"
+          variant="bordered"
           onClick={handlePrevious}
           disabled={currentStep === 1}
-          className="gap-2 bg-transparent border-blue-400/30 text-blue-200 hover:bg-blue-900/50 hover:text-white disabled:opacity-30"
+          size="lg"
+          className="gap-2 bg-transparent border-primary text-primary hover:bg-blue-900 hover:text-white disabled:opacity-30 w-full sm:w-auto"
         >
           <ChevronLeft className="w-4 h-4" />
           Previous
         </Button>
 
+        {/* Next or Submit */}
         {currentStep < TOTAL_STEPS ? (
           <Button
-            onClick={() => {
-              // STEP 1 VALIDATION
-              if (currentStep === 1) {
-                if (!validateStep1()) return;
-              }
-
-              // STEP 2 VALIDATION
-              if (currentStep === 2) {
-                if (!validateStep2()) return;
-              }
-
-              // STEP 3 VALIDATION
-              if (currentStep === 3) {
-                if (!validateStep3()) return;
-              }
-
-              // STEP 4 VALIDATION
-              if (currentStep === 4) {
-                if (!validateStep4()) return;
-              }
-
-              // STEP 5 VALIDATION
-              if (currentStep === 5) {
-                if (!validateStep5()) return;
-              }
-
-              // STEP 6 VALIDATION
-              if (currentStep === 6) {
-                if (!validateStep6()) return;
-              }
-
-              // If validation is passed
-              setCurrentStep(currentStep + 1);
-            }}
+            onClick={handleNext}
+            size="lg"
+            className="gap-2 bg-gradient-to-r from-yellow-500 to-orange-500 
+                 hover:from-yellow-600 hover:to-orange-600 
+                 text-white border-0 w-full sm:w-auto"
           >
             Next
+            <ChevronRight className="w-4 h-4" />
           </Button>
         ) : (
           <Button
             onClick={handleSubmit}
             disabled={isSubmitting}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white"
+            size="lg"
+            className="bg-gradient-to-r from-yellow-500 to-orange-500 
+                 hover:from-yellow-600 hover:to-orange-600 
+                 text-white border-0 w-full sm:w-auto"
+            endContent={<LuArrowRight />}
           >
             {isSubmitting ? (
               <>

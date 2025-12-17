@@ -1,31 +1,31 @@
 // components/FloatingSocialMedia.tsx
-"use client";
+"use client"
 
-import React, { useState } from 'react';
-import { MessageCircle, Mail, Facebook, Phone, Smartphone, Globe, X } from 'lucide-react';
+import React, { useState } from "react"
+import { MessageCircle, Send, Facebook, Phone, Mail, Globe, X, PhoneCall, Smartphone } from "lucide-react"
 
 const FloatingSocialMedia = () => {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false)
 
   const socialLinks = [
     {
       href: "https://www.facebook.com/people/Infinitech-Advertising-Corp/100080647808810/",
       icon: Facebook,
       bgColor: "bg-blue-600 hover:bg-blue-700",
-      title: "Facebook"
+      title: "Facebook",
     },
-//    {
-//      href: "https://wa.me/",
-//      icon: MessageCircle,
-//      bgColor: "bg-green-600 hover:bg-green-700",
-//      title: "WhatsApp"
-//    },
-//    {
-//      href: "https://maps.google.com/?q=Campos Rueda Building, 311 Urban Ave, Makati, 1206 Metro Manila",
-//      icon: Send,
-//      bgColor: "bg-sky-500 hover:bg-sky-600",
-//      title: "Location"
-//    },
+    // {
+    //   href: "https://wa.me/",
+    //   icon: MessageCircle,
+    //   bgColor: "bg-green-600 hover:bg-green-700",
+    //   title: "WhatsApp"
+    // },
+    // {
+    //   href: "https://maps.google.com/?q=Campos Rueda Building, 311 Urban Ave, Makati, 1206 Metro Manila",
+    //   icon: Send,
+    //   bgColor: "bg-sky-500 hover:bg-sky-600",
+    //   title: "Location"
+    // },
     {
       href: "mailto:infinitechcorp.ph@gmail.com",
       icon: Mail,
@@ -33,9 +33,10 @@ const FloatingSocialMedia = () => {
       title: "Email",
     },
     {
+      
       href: "tel:(+63)9195874915",
       icon: Smartphone,
-      bgColor: "bg-green-500 hover:bg-blue-600",
+      bgColor: "bg-blue-500 hover:bg-blue-600",
       title: "Phone",
     },
     {
@@ -44,14 +45,14 @@ const FloatingSocialMedia = () => {
       bgColor: "bg-sky-500 hover:bg-sky-600",
       title: "Phone",
     },
-  ];
+  ]
 
   return (
     <>
       {/* Desktop View - Always show all icons */}
-      <div className="hidden md:flex fixed right-0 bottom-1 -translate-y-1/2 z-40 flex-col gap-3 pr-6">
+      <div className="hidden md:flex fixed right-0 top-1/2 -translate-y-1/2 z-40 flex-col gap-3 pr-4">
         {socialLinks.map((link, index) => {
-          const Icon = link.icon;
+          const Icon = link.icon
           return (
             <a
               key={index}
@@ -63,12 +64,12 @@ const FloatingSocialMedia = () => {
             >
               <Icon className="w-6 h-6 text-white" />
             </a>
-          );
+          )
         })}
       </div>
 
       {/* Mobile View - Toggle button and expandable menu */}
-      <div className="md:hidden fixed right-4 bottom-20 -translate-y-1/2 z-40">
+      <div className="md:hidden fixed right-4 top-1/2 -translate-y-1/2 z-40">
         {/* Toggle Button */}
         {!isExpanded ? (
           <button
@@ -84,17 +85,17 @@ const FloatingSocialMedia = () => {
             {/* Close Button at Bottom */}
             <button
               onClick={() => setIsExpanded(false)}
-              className="w-14 h-14 rounded-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 flex items-center justify-center shadow-xl transition-all hover:scale-110"
+              className="w-14 h-14 rounded-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 flex items-center justify-center shadow-xl transition-all hover:scale-110 mt-3"
               aria-label="Close social media menu"
             >
               <X className="w-7 h-7 text-white" />
             </button>
 
             {/* Social Links */}
-            <div className="fixed bottom-20 right-1 flex flex-col-reverse gap-3 animate-fadeIn">
+            <div className="flex flex-col-reverse gap-3 animate-fadeIn">
               {socialLinks.map((link, index) => {
-                const Icon = link.icon;
-                const reverseIndex = socialLinks.length - 1 - index;
+                const Icon = link.icon
+                const reverseIndex = socialLinks.length - 1 - index
                 return (
                   <a
                     key={index}
@@ -103,13 +104,13 @@ const FloatingSocialMedia = () => {
                     rel="noopener noreferrer"
                     className={`w-12 h-12 rounded-full ${link.bgColor} flex items-center justify-center shadow-lg transition-all hover:scale-110`}
                     style={{
-                      animation: `slideUp 0.3s ease-out ${reverseIndex * 0.1}s both`
+                      animation: `slideUp 0.3s ease-out ${reverseIndex * 0.1}s both`,
                     }}
                     title={link.title}
                   >
                     <Icon className="w-6 h-6 text-white" />
                   </a>
-                );
+                )
               })}
             </div>
           </div>
@@ -138,7 +139,7 @@ const FloatingSocialMedia = () => {
         }
       `}</style>
     </>
-  );
-};
+  )
+}
 
-export default FloatingSocialMedia;
+export default FloatingSocialMedia

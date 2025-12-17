@@ -7,8 +7,9 @@ import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { useToast } from "@/hooks/use-toast"
 import { Loader2 } from "lucide-react"
+import { toast } from "sonner"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 interface SupportModalProps {
   open: boolean
@@ -17,7 +18,6 @@ interface SupportModalProps {
 
 export function SupportModal({ open, onOpenChange }: SupportModalProps) {
   const [isLoading, setIsLoading] = useState(false)
-  const { toast } = useToast()
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -25,9 +25,45 @@ export function SupportModal({ open, onOpenChange }: SupportModalProps) {
     subject: "",
     message: "",
   })
+  const [errors, setErrors] = useState({
+    name: "",
+    email: "",
+    category: "",
+    subject: "",
+    message: "",
+  })
+
+  const validateForm = () => {
+    const newErrors: typeof errors = { name: "", email: "", category: "", subject: "", message: "" }
+
+    if (!formData.name.trim()) {
+      newErrors.name = "Name is required"
+    }
+
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required"
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = "Invalid email format"
+    }
+
+    if (!formData.subject.trim()) {
+      newErrors.subject = "Subject is required"
+    }
+
+    if (!formData.message.trim()) {
+      newErrors.message = "Message is required"
+    } else if (formData.message.trim().length < 20) {
+      newErrors.message = "Message must be at least 20 characters"
+    }
+
+    setErrors(newErrors)
+    return Object.values(newErrors).every((err) => err === "")
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    if (!validateForm()) return
 
     const websiteKeywords = [
       "website",
@@ -48,10 +84,9 @@ export function SupportModal({ open, onOpenChange }: SupportModalProps) {
     const messageHasWebsiteContext = websiteKeywords.some((keyword) => formData.message.toLowerCase().includes(keyword))
 
     if (!messageHasWebsiteContext) {
-      toast({
-        title: "Invalid Request",
+      toast.error("Invalid Request", {
         description: "Please describe an issue or feedback related to this website.",
-        variant: "destructive",
+        richColors: true,
       })
       return
     }
@@ -77,18 +112,18 @@ export function SupportModal({ open, onOpenChange }: SupportModalProps) {
         throw new Error(data.message || "Failed to create support ticket")
       }
 
-     toast({
-        title: "Success",
+      toast.success("Success", {
         description: `Support ticket created: ${data.ticket_id}`,
+        richColors: true,
       })
 
       setFormData({ name: "", email: "", category: "bug_report", subject: "", message: "" })
+      setErrors({ name: "", email: "", category: "", subject: "", message: "" })
       onOpenChange(false)
     } catch (error) {
-      toast({
-        title: "Error",
+      toast.error("Error", {
         description: error instanceof Error ? error.message : "Failed to create support ticket",
-        variant: "destructive",
+        richColors: true,
       })
     } finally {
       setIsLoading(false)
@@ -102,16 +137,11 @@ export function SupportModal({ open, onOpenChange }: SupportModalProps) {
           <DialogTitle>Website Support & Feedback</DialogTitle>
           <DialogDescription>Report website issues or share feedback to help us improve.</DialogDescription>
         </DialogHeader>
-
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <label className="text-sm font-medium">Name</label>
-            <Input
-              placeholder="Your full name"
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              required
-            />
+            <Input placeholder="Your full name" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required />
+            {errors.name && <small className="text-red-500">{errors.name}</small>}
           </div>
 
           <div className="space-y-2">
@@ -123,22 +153,35 @@ export function SupportModal({ open, onOpenChange }: SupportModalProps) {
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               required
             />
+            {errors.email && <small className="text-red-500">{errors.email}</small>}
           </div>
 
           <div className="space-y-2">
             <label className="text-sm font-medium">Category</label>
-            <select
-              className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
-              value={formData.category}
-              onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-              required
-            >
-              <option value="bug_report">Bug Report</option>
-              <option value="feature_request">Feature Request</option>
-              <option value="general_feedback">General Feedback</option>
-              <option value="menu_question">Menu Question</option>
-              <option value="other">Other</option>
-            </select>
+            <Select value={formData.category} onValueChange={(val) => setFormData({ ...formData, category: val })}>
+              <SelectTrigger className="w-full bg-transparent border border-gray-300 rounded-md px-3 py-2 text-sm">
+                <SelectValue placeholder="Select category" />
+              </SelectTrigger>
+
+              <SelectContent className="max-w-full bg-white border border-gray-200">
+                <SelectItem className="bg-transparent hover:bg-accent text-sm focus:bg-accent focus:text-white" value="bug_report">
+                  Bug Report
+                </SelectItem>
+                <SelectItem className="bg-transparent hover:bg-accent text-sm focus:bg-accent focus:text-white" value="feature_request">
+                  Feature Request
+                </SelectItem>
+                <SelectItem className="bg-transparent hover:bg-accent text-sm focus:bg-accent focus:text-white" value="general_feedback">
+                  General Feedback
+                </SelectItem>
+                <SelectItem className="bg-transparent hover:bg-accent text-sm focus:bg-accent focus:text-white" value="menu_question">
+                  Menu Question
+                </SelectItem>
+                <SelectItem className="bg-transparent hover:bg-accent text-sm focus:bg-accent focus:text-white" value="other">
+                  Other
+                </SelectItem>
+              </SelectContent>
+            </Select>
+            {errors.category && <small className="text-red-500">{errors.category}</small>}
           </div>
 
           <div className="space-y-2">
@@ -149,6 +192,7 @@ export function SupportModal({ open, onOpenChange }: SupportModalProps) {
               onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
               required
             />
+            {errors.subject && <small className="text-red-500">{errors.subject}</small>}
           </div>
 
           <div className="space-y-2">
@@ -161,9 +205,10 @@ export function SupportModal({ open, onOpenChange }: SupportModalProps) {
               required
               className="resize-none"
             />
+            {errors.message && <small className="text-red-500">{errors.message}</small>}
           </div>
 
-          <Button type="submit" disabled={isLoading} className="w-full bg-orange-400 hover:bg-orange-500 text-black">
+          <Button type="submit" disabled={isLoading} className="w-full bg-accent hover:bg-accent/80 text-white">
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {isLoading ? "Submitting..." : "Submit Website Feedback"}
           </Button>

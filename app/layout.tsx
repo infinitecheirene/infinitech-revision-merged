@@ -4,8 +4,8 @@ import Providers from "./providers";
 import ConditionalLayout from "@/components/conditional-layout";
 import FloatingWidgets from "@/components/FloatingWidgets";
 import { poppins } from "@/config/fonts";
-import { Toaster } from "react-hot-toast";
 import type { Metadata } from "next";
+import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://infinitechphil.com'),

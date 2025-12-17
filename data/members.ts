@@ -1,4 +1,3 @@
-
 export const members = [
   // CEO
   {
@@ -11,15 +10,15 @@ export const members = [
     phone: "09157100777",
     telegram: {
       title: "09157100777",
-      href: "https://web.telegram.org/a/#859510508"
+      href: "https://web.telegram.org/a/#859510508",
     },
     viber: {
       title: "09157100777",
-      href: "https://msng.link/o?09157100777=vi"
+      href: "https://msng.link/o?09157100777=vi",
     },
     href: "https://www.facebook.com/people/ABIC-Realty-Consultancy-Corporation/61576086213534/",
     hrefs: "https://www.facebook.com/profile.php?id=100080647808810",
-    company: "abicrealtyph.com | Infinitech Advertising Corporation"
+    company: "abicrealtyph.com | Infinitech Advertising Corporation",
   },
   // Executive Assistant
   {
@@ -30,17 +29,16 @@ export const members = [
     phone: "09298597655",
     telegram: {
       title: "09298597655",
-      href: "https://web.telegram.org/a/#6329247094"
+      href: "https://web.telegram.org/a/#6329247094",
     },
     viber: {
       title: "09298597655",
-      href: "https://msng.link/o?09298597655=vi"
+      href: "https://msng.link/o?09298597655=vi",
     },
-    facebookname: "Maria Krissa Charez Bongon",
-    href: "https://www.facebook.com/charizr1",
+    facebookname: "Krissa Bongon",
+    href: "https://www.facebook.com/infinitech.krissa",
   },
-  // Sales Director
-   {
+  {
     name: "Baby Rose Hernandez",
     position: "Sales Director",
     image: "rose.png",
@@ -48,7 +46,7 @@ export const members = [
     phone: "09651983796",
     telegram: {
       title: "09651983796",
-      href: "https://web.telegram.org/k/#3965198379"
+      href: "https://web.telegram.org/k/#3965198379",
     },
     facebookname: "ABIC Realty & Consultancy Corporation",
     href: "https://www.facebook.com/people/ABIC-Realty-Consultancy-Corporation/61576086213534/",
@@ -62,13 +60,13 @@ export const members = [
     phone: "09667515747",
     telegram: {
       title: "09667515747",
-      href: "https://web.telegram.org/a/#7307476341"
+      href: "https://web.telegram.org/a/#7307476341",
     },
     viber: {
       title: "09667515747",
-      href: "https://msng.link/o?09667515747=vi"
+      href: "https://msng.link/o?09667515747=vi",
     },
-    facebookname: "Darlene Angel Fajarito",
+    facebookname: "Darlene Angel G. Fajarito",
     href: "https://www.facebook.com/darlenefajarito",
   },
   // IT Supervisor
@@ -80,25 +78,24 @@ export const members = [
     phone: "09456754591",
     telegram: {
       title: "09456754591",
-      href: "https://web.telegram.org/a/#5645362073"
+      href: "https://web.telegram.org/a/#5645362073",
     },
     viber: {
       title: "09456754591",
-      href: "https://msng.link/o?09456754591=vi"
+      href: "https://msng.link/o?09456754591=vi",
     },
-    facebookname: "Justin De Castro",
+    facebookname: "Justin Mangubat DeCastro",
     href: "https://www.facebook.com/tine.tainy",
   },
-  // Junior Web Developers
   {
     name: "Eirene Grace Armilla",
     position: "Junior Web Developer",
-    image: "eirene.png",
+    image: "eirine.png",
     email: "infinitech.eirene@gmail.com",
-    phone: "09281446745",
+    phone: "09668830150",
     telegram: {
-      title: "09281446745",
-      href: "https://t.me/inifnitech_eirene"
+      title: "09668830150",
+      href: "https://t.me/EireneArmilla",
     },
     facebookname: "Eirene Grace Armilla",
     href: "https://www.facebook.com/share/1Dfj2gvpyf/",
@@ -111,9 +108,9 @@ export const members = [
     phone: "09668830150",
     telegram: {
       title: "09668830150",
-      href: "https://t.me/infinitech_hazel"
+      href: "https://t.me/infinitech_hazel",
     },
-    facebookname: "Hazel Anne Mendoza",
+    facebookname: "Hazel Mendoza",
     href: "https://www.facebook.com/share/17K45vBsgz/",
   },
   {
@@ -124,9 +121,9 @@ export const members = [
     phone: "09668830150",
     telegram: {
       title: "09386226278",
-      href: "https://web.telegram.org/k/#5736999446"
+      href: "https://web.telegram.org/k/#5736999446",
     },
-    facebookname: "Raiza Mae Habaña",
+    facebookname: "Raiza Habaña",
     href: "https://www.facebook.com/share/1FJfpM3ig9/",
   },
   // Digital Marketing Staff
@@ -138,9 +135,9 @@ export const members = [
     phone: "09566423715",
     telegram: {
       title: "09566423715",
-      href: "https://web.telegram.org/k/#@Mike_madriaga"
+      href: "https://web.telegram.org/k/#@Mike_madriaga",
     },
-    facebookname: "Michael Tapec",
+    facebookname: "Madriaga Mike",
     href: "https://www.facebook.com/share/1Rg9NYHbRL/",
   },
   {
@@ -151,9 +148,9 @@ export const members = [
     phone: "09940244223",
     telegram: {
       title: "09940244223",
-      href: "https://web.telegram.org/k/#8303557841"
+      href: "https://web.telegram.org/k/#8303557841",
     },
-    facebookname: "Armand M. Cajucom",
+    facebookname: "Armand Cajucom",
     href: "https://www.facebook.com/armand.cajucom.7?mibextid=ZbWKwL",
   },
   {
@@ -164,11 +161,13 @@ export const members = [
     phone: "09668830150",
     telegram: {
       title: "09668830150",
-      href: "https://web.telegram.org/k/#5736999446"
+      href: "https://web.telegram.org/k/#5736999446",
     },
     facebookname: "JD Anyayahan",
     href: "https://www.facebook.com/share/17TegUqJzV/?mibextid=wwXIfr",
   },
+  // Junior Web Developers
+
   {
     name: "Jayvee Valeriano",
     position: "Digital Marketing Staff",
@@ -177,9 +176,9 @@ export const members = [
     phone: "09384715225",
     telegram: {
       title: "09384715225",
-      href: "https://web.telegram.org/k/#@Jayveevaleriano20"
+      href: "https://web.telegram.org/k/#@Jayveevaleriano20",
     },
-    facebookname: "Jayvee Valeriano",
+    facebookname: "Real Estate by Jayvee Valeriano",
     href: "https://www.facebook.com/Abic.jayvee",
   },
   {
@@ -190,9 +189,9 @@ export const members = [
     phone: "09489294296",
     telegram: {
       title: "09489294296",
-      href: "https://web.telegram.org/k/#63948929429"
+      href: "https://web.telegram.org/k/#63948929429",
     },
-    facebookname: "Janina Jerusalem",
+    facebookname: "Janina Caliboso",
     href: "https://www.facebook.com/iamjaninajerusalem/",
   },
   {
@@ -203,7 +202,7 @@ export const members = [
     phone: "09487191557",
     telegram: {
       title: "09487191557",
-      href: "https://web.telegram.org/k/#09487191557"
+      href: "https://web.telegram.org/k/#09487191557",
     },
     facebookname: "Angely Victoriano",
     href: "https://www.facebook.com/angely.victoriano/",
@@ -216,9 +215,9 @@ export const members = [
     phone: "09919875397",
     telegram: {
       title: "09919875397",
-      href: "https://web.telegram.org/k/#09919875397"
+      href: "https://web.telegram.org/k/#09919875397",
     },
-    facebookname: "Kaila Dapiaoen",
+    facebookname: "Kaila Rose Dapiaoen",
     href: "https://www.facebook.com/krdapiaoen",
   },
   {
@@ -229,15 +228,9 @@ export const members = [
     phone: "09470445574",
     telegram: {
       title: "09470445574",
-      href: "https://t.me/09470445574"
+      href: "https://t.me/09470445574",
     },
     facebookname: "Joe Rendon",
     href: "https://www.facebook.com/joe.rendon.372752/?rdid=f5RMtHfIeSZVoMGO",
   },
- 
-
-
- 
-];
-
- 
+]

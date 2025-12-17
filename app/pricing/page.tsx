@@ -2,7 +2,9 @@
 
 import { useState } from "react"
 import PricingCard from "@/components/pricingCard"
-import { X, ShoppingCart, Mail, Loader2 } from "lucide-react"
+import { X, ShoppingCart, Mail, Loader2, Plus, Minus, Globe, CreditCard, Share, Share2, Video } from "lucide-react"
+import { cn } from "@/lib/utils"
+import { useDeviceType } from "@/hooks/use-device"
 
 interface CartItem {
   planName: string
@@ -12,12 +14,14 @@ interface CartItem {
 }
 
 const PricingPage = () => {
-  const [activeService, setActiveService] = useState("website")
+  const [activeService, setActiveService] = useState<string | null>("")
   const [billingPeriod, setBillingPeriod] = useState<"monthly" | "yearly">("monthly")
   const [cart, setCart] = useState<CartItem[]>([])
   const [clientEmail, setClientEmail] = useState("")
   const [isSending, setIsSending] = useState(false)
   const [emailStatus, setEmailStatus] = useState<{ type: "success" | "error"; message: string } | null>(null)
+  const [hoveredCol, setHoveredCol] = useState<number | null>(null)
+  const device = useDeviceType()
 
   const services = {
     website: {
@@ -161,13 +165,7 @@ const PricingPage = () => {
           name: "Standard",
           monthlyPrice: 11993,
           yearlyPrice: 74979,
-          features: [
-            "Account Setup (FB+IG+TikTok)",
-            "Branding (Profile & Cover)",
-            "8 Posts / Month",
-            "2 Reels / Month",
-            "Monthly Insights Report",
-          ],
+          features: ["Account Setup (FB+IG+TikTok)", "Branding (Profile & Cover)", "8 Posts / Month", "2 Reels / Month", "Monthly Insights Report"],
           popular: false,
           cta: "Get Started",
         },
@@ -358,86 +356,286 @@ const PricingPage = () => {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 py-24">
+    <main className="min-h-screen py-24">
       {/* Header Section */}
       <section className="container mx-auto px-4 sm:px-6 lg:px-8 mb-8 lg:mb-12">
         <div className="text-center max-w-4xl mx-auto">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight">
-            Our Pricing Plans
-          </h1>
-          <p className="text-base sm:text-lg text-slate-300 mb-6 leading-relaxed">
+          <h1 className={`text-4xl text-accent font-bold uppercase`}>Pricing Plans</h1>
+          <h2 className="text-3xl text-primary font-['Poetsen_One']">
             Choose the perfect plan for your business. All plans include support and updates.
-          </p>
+          </h2>
 
-          {/* Service Selector */}
-          <div className="flex justify-center gap-2 mb-6 overflow-x-auto pb-2">
-            {Object.entries(services).map(([key, service]) => (
-              <button
-                key={key}
-                onClick={() => setActiveService(key)}
-                className={`px-4 py-2 rounded-lg font-semibold transition-all whitespace-nowrap text-sm ${
-                  activeService === key
-                    ? "bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg"
-                    : "bg-slate-700 text-slate-300 hover:bg-slate-600"
-                }`}
-              >
-                {key === "website" && "Website"}
-                {key === "juantap" && "JuanTap"}
-                {key === "socialmedia" && "Social Media"}
-                {key === "multimedia" && "Multimedia"}
-              </button>
-            ))}
-          </div>
-
-          <div className="flex justify-center gap-2 mb-4">
+          <div className="flex justify-center gap-2 my-4">
             <button
               onClick={() => setBillingPeriod("monthly")}
-              className={`px-5 py-2 rounded-lg font-semibold transition-all text-sm ${
+              className={`px-5 py-2 rounded-full font-semibold transition-all text-sm ${
                 billingPeriod === "monthly"
-                  ? "bg-cyan-500 text-white"
-                  : "bg-slate-700 text-slate-300 hover:bg-slate-600"
+                  ? "bg-gradient-to-r from-blue-600 to-cyan-500 backdrop-blur-sm rounded-full text-white"
+                  : "bg-white text-slate-700 border border-black/20 shadow-lg"
               }`}
             >
               Monthly
             </button>
             <button
               onClick={() => setBillingPeriod("yearly")}
-              className={`px-5 py-2 rounded-lg font-semibold transition-all text-sm ${
-                billingPeriod === "yearly" ? "bg-cyan-500 text-white" : "bg-slate-700 text-slate-300 hover:bg-slate-600"
+              className={`px-5 py-2 rounded-full font-semibold transition-all text-sm ${
+                billingPeriod === "yearly"
+                  ? "bg-gradient-to-r from-blue-600 to-cyan-500 backdrop-blur-sm rounded-full text-white"
+                  : "bg-white text-slate-700 border border-black/20 shadow-lg"
               }`}
             >
               Yearly
             </button>
           </div>
 
-          <p className="text-slate-400 text-sm">{currentService.description}</p>
+          <p className="text-sm sm:text-base lg:text-xl text-slate-600 max-w-4xl mx-auto leading-relaxed animate-fade-in-up mb-8 sm:mb-12 px-4">
+            {currentService?.description || ""}
+          </p>
         </div>
       </section>
 
       <section className="container mx-auto px-4 sm:px-6 lg:px-8 mb-12">
-        <div className="flex flex-col lg:flex-row gap-6 max-w-7xl mx-auto">
-          {/* Pricing Cards - Left Side (Landscape 2x2 grid) */}
-          <div className="flex-1">
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-              {currentService.plans.map((plan, index) => (
-                <PricingCard
-                  key={index}
-                  plan={plan}
-                  billingPeriod={billingPeriod}
-                  price={getPrice(plan)}
-                  currency="₱"
-                  onAddToCart={() => toggleCart(plan.name, activeService, getPrice(plan))}
-                  isInCart={isInCart(plan.name, activeService)}
-                />
-              ))}
+        <div className={`flex ${device === "mobile" ? "flex-col" : "flex-row"} gap-6 max-w-7xl mx-auto`}>
+          <div
+            className={`flex ${device === "laptop" ? "flex-row" : "flex-col"} gap-6 w-full mx-auto md:gap-6 overflow-hidden md:overflow-visible`}
+            onPointerLeave={() => {
+              setHoveredCol(null)
+              setActiveService(null)
+            }}
+          >
+            {/* Website */}
+            <div
+              onPointerEnter={() => {
+                if (!window.matchMedia("(hover: none)").matches) {
+                  setHoveredCol(1)
+                  setActiveService("website")
+                }
+              }}
+              className={cn(
+                "transform will-change-transform transition-[flex,transform,opacity] duration-300 ease-out",
+                hoveredCol === null
+                  ? "flex-1 translate-x-0 opacity-100"
+                  : hoveredCol === 1
+                    ? "flex-[4] translate-x-0 opacity-100"
+                    : // non-hovered (to the left of hovered -> slide left)
+                      "flex-[0.0001] -translate-x-12 opacity-0 overflow-hidden pointer-events-none",
+              )}
+            >
+              <div className="flex items-center gap-2 mb-4 px-1">
+                <h2
+                  className={cn(
+                    "font-display flex justify-center items-center gap-2 duration-300 w-full px-4 py-2 rounded-lg font-semibold transition-all whitespace-nowrap text-sm ",
+                    hoveredCol === 1
+                      ? "bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg"
+                      : "bg-slate-700 text-slate-100 hover:bg-slate-600",
+                  )}
+                >
+                  <Globe
+                    className={cn(
+                      "w-4 h-4 transition-colors duration-300 text-primary-foreground",
+                      hoveredCol ? "text-primary-foreground" : "text-slate-100",
+                    )}
+                  />
+                  Website
+                </h2>
+              </div>
+              <div className="space-y-4">
+                {services.website.plans.map((plan, idx) => (
+                  <div key={idx} className={`${hoveredCol && "mb-30"} `}>
+                    <PricingCard
+                      key={idx}
+                      plan={plan}
+                      billingPeriod={billingPeriod}
+                      price={getPrice(plan)}
+                      currency="₱"
+                      onAddToCart={() => toggleCart(plan.name, "website", getPrice(plan))}
+                      isInCart={isInCart(plan.name, "website")}
+                      isColumnHovered={hoveredCol === 1}
+                      index={idx}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* JuanTap */}
+            <div
+              onPointerEnter={() => {
+                if (!window.matchMedia("(hover: none)").matches) {
+                  setHoveredCol(2)
+                  setActiveService("juantap")
+                }
+              }}
+              className={cn(
+                "transform will-change-transform transition-[flex,transform,opacity] duration-300 ease-out",
+                hoveredCol === null
+                  ? "flex-1 translate-x-0 opacity-100"
+                  : hoveredCol === 2
+                    ? "flex-[4] translate-x-0 opacity-100"
+                    : // non-hovered (to the left of hovered -> slide left)
+                      "flex-[0.0001] -translate-x-12 opacity-0 overflow-hidden pointer-events-none",
+              )}
+            >
+              <div className="flex items-center gap-2 mb-4 px-1">
+                <h2
+                  className={cn(
+                    "font-display flex justify-center items-center gap-2 duration-300 w-full px-4 py-2 rounded-lg font-semibold transition-all whitespace-nowrap text-sm ",
+                    hoveredCol === 2
+                      ? "bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg"
+                      : "bg-slate-700 text-slate-100 hover:bg-slate-600",
+                  )}
+                >
+                  <CreditCard
+                    className={cn(
+                      "w-4 h-4 transition-colors duration-300 text-primary-foreground",
+                      hoveredCol ? "text-primary-foreground" : "text-slate-100",
+                    )}
+                  />
+                  JuanTap
+                </h2>
+              </div>
+              <div className="space-y-4">
+                {services.juantap.plans.map((plan, idx) => (
+                  <div key={idx} className={`${hoveredCol && "mb-30"} `}>
+                    <PricingCard
+                      key={idx}
+                      plan={plan}
+                      billingPeriod={billingPeriod}
+                      price={getPrice(plan)}
+                      currency="₱"
+                      onAddToCart={() => toggleCart(plan.name, "juantap", getPrice(plan))}
+                      isInCart={isInCart(plan.name, "juantap")}
+                      isColumnHovered={hoveredCol === 2}
+                      index={idx}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Social Media */}
+            <div
+              onPointerEnter={() => {
+                if (!window.matchMedia("(hover: none)").matches) {
+                  setHoveredCol(3)
+                  setActiveService("socialmedia")
+                }
+              }}
+              className={cn(
+                "transform will-change-transform transition-[flex,transform,opacity] duration-300 ease-out",
+                hoveredCol === null
+                  ? "flex-1 translate-x-0 opacity-100"
+                  : hoveredCol === 3
+                    ? "flex-[4] translate-x-0 opacity-100"
+                    : // non-hovered (to the left of hovered -> slide left)
+                      "flex-[0.0001] -translate-x-12 opacity-0 overflow-hidden pointer-events-none",
+              )}
+            >
+              <div className="flex items-center gap-2 mb-4 px-1">
+                <h2
+                  className={cn(
+                    "font-display flex justify-center items-center gap-2 duration-300 w-full px-4 py-2 rounded-lg font-semibold transition-all whitespace-nowrap text-sm ",
+                    hoveredCol === 3
+                      ? "bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg"
+                      : "bg-slate-700 text-slate-100 hover:bg-slate-600",
+                  )}
+                >
+                  <Share2
+                    className={cn(
+                      "w-4 h-4 transition-colors duration-300 text-primary-foreground",
+                      hoveredCol ? "text-primary-foreground" : "text-slate-100",
+                    )}
+                  />
+                  Social Media
+                </h2>
+              </div>
+              <div className="space-y-4">
+                {services.socialmedia.plans.map((plan, idx) => (
+                  <div key={idx} className={`${hoveredCol && "mb-30"} `}>
+                    <PricingCard
+                      key={idx}
+                      plan={plan}
+                      billingPeriod={billingPeriod}
+                      price={getPrice(plan)}
+                      currency="₱"
+                      onAddToCart={() => toggleCart(plan.name, "socialmedia", getPrice(plan))}
+                      isInCart={isInCart(plan.name, "socialmedia")}
+                      isColumnHovered={hoveredCol === 3}
+                      index={idx}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Multimedia */}
+            <div
+              onPointerEnter={() => {
+                if (!window.matchMedia("(hover: none)").matches) {
+                  setHoveredCol(4)
+                  setActiveService("multimedia")
+                }
+              }}
+              className={cn(
+                "transform will-change-transform transition-[flex,transform,opacity] duration-300 ease-out",
+                hoveredCol === null
+                  ? "flex-1 translate-x-0 opacity-100"
+                  : hoveredCol === 4
+                    ? "flex-[4] translate-x-0 opacity-100"
+                    : // non-hovered (to the left of hovered -> slide left)
+                      "flex-[0.0001] -translate-x-12 opacity-0 overflow-hidden pointer-events-none",
+              )}
+            >
+              <div className="flex items-center gap-2 mb-4 px-1">
+                <h2
+                  className={cn(
+                    "font-display flex justify-center items-center gap-2 duration-300 w-full px-4 py-2 rounded-lg font-semibold transition-all whitespace-nowrap text-sm ",
+                    hoveredCol === 4
+                      ? "bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg"
+                      : "bg-slate-700 text-slate-100 hover:bg-slate-600",
+                  )}
+                >
+                  <Video
+                    className={cn(
+                      "w-4 h-4 transition-colors duration-300 text-primary-foreground",
+                      hoveredCol ? "text-primary-foreground" : "text-slate-100",
+                    )}
+                  />
+                  Multimedia
+                </h2>
+              </div>
+              <div className="space-y-4">
+                {services.multimedia.plans.map((plan, idx) => (
+                  <div key={idx} className={`${hoveredCol && "mb-30"} `}>
+                    <PricingCard
+                      key={idx}
+                      plan={plan}
+                      billingPeriod={billingPeriod}
+                      price={getPrice(plan)}
+                      currency="₱"
+                      onAddToCart={() => toggleCart(plan.name, "multimedia", getPrice(plan))}
+                      isInCart={isInCart(plan.name, "multimedia")}
+                      isColumnHovered={hoveredCol === 4}
+                      index={idx}
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
-          <div className="lg:w-80 shrink-0">
-            <div id="order-summary" className="bg-slate-800/70 border border-slate-700 rounded-2xl p-5">
+          {/* Cart */}
+          <div
+            className={`${device === "mobile" ? "w-full" : "w-80"} shrink-0 order-last col-span-1`}
+            onPointerEnter={() => {
+              setHoveredCol(null)
+              setActiveService(null)
+            }}
+          >
+            <div id="order-summary" className="bg-slate-50 rounded-2xl p-5">
               <div className="flex items-center gap-2 mb-4">
                 <ShoppingCart className="w-5 h-5 text-cyan-400" />
-                <h3 className="text-lg font-bold text-white">Order Summary</h3>
+                <h3 className="text-lg font-bold text-primary">Order Summary</h3>
               </div>
 
               {cart.length === 0 ? (
@@ -450,11 +648,11 @@ const PricingPage = () => {
                 <>
                   <div className="space-y-3 mb-4">
                     {cart.map((item, idx) => (
-                      <div key={idx} className="flex items-start justify-between gap-2 bg-slate-700/50 rounded-lg p-3">
+                      <div key={idx} className="flex items-start justify-between gap-2 bg-slate-300/50 rounded-lg p-3">
                         <div className="min-w-0 flex-1">
-                          <p className="text-white font-medium text-sm truncate">{item.planName}</p>
+                          <p className="text-primary font-medium text-sm truncate">{item.planName}</p>
                           <p className="text-slate-400 text-xs">{getServiceTitle(item.service)}</p>
-                          <p className="text-cyan-400 text-xs font-semibold">
+                          <p className="text-primary text-xs font-semibold">
                             ₱{item.price.toLocaleString()} / {item.billingPeriod === "yearly" ? "year" : "mo"}
                           </p>
                         </div>
@@ -470,8 +668,8 @@ const PricingPage = () => {
 
                   <div className="border-t border-slate-600 pt-4">
                     <div className="flex justify-between items-center mb-4">
-                      <span className="text-slate-300 font-medium">Total</span>
-                      <span className="text-xl font-bold text-white">₱{cartTotal.toLocaleString()}</span>
+                      <span className="text-primary font-medium">Total</span>
+                      <span className="text-xl font-bold text-primary">₱{cartTotal.toLocaleString()}</span>
                     </div>
 
                     <div className="space-y-3">
@@ -482,16 +680,14 @@ const PricingPage = () => {
                           value={clientEmail}
                           onChange={(e) => setClientEmail(e.target.value)}
                           placeholder="client@email.com"
-                          className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white text-sm placeholder-slate-400 focus:outline-none focus:border-cyan-500 transition-colors"
+                          className="w-full px-3 py-2 border border-slate-400 rounded-lg text-white text-sm placeholder-slate-400 focus:border-cyan-500 transition-colors"
                         />
                       </div>
 
                       {emailStatus && (
                         <div
                           className={`text-xs p-2 rounded-lg ${
-                            emailStatus.type === "success"
-                              ? "bg-green-500/20 text-green-400"
-                              : "bg-red-500/20 text-red-400"
+                            emailStatus.type === "success" ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"
                           }`}
                         >
                           {emailStatus.message}

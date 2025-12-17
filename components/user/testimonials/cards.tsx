@@ -65,7 +65,7 @@ const Cards = () => {
     <div className="flex flex-col justify-between w-full">
       {/* Slider */}
       <div className="flex flex-col justify-between gap-4">
-        <div ref={sliderRef} className="keen-slider mt-8">
+        <div ref={sliderRef} className="keen-slider mt-8 sm:mt-12">
           {testimonials.map((testimonial) => (
             <div key={testimonial.name} className="keen-slider__slide flex justify-center px-2 sm:px-4 cursor-pointer">
               <Card className="bg-gray-100 shadow-none flex flex-col justify-between py-6 sm:py-10 w-full max-w-md sm:max-w-lg">
